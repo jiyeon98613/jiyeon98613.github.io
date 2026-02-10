@@ -1,0 +1,32 @@
+name: Manual Pharmacy Update
+
+on:
+  workflow_dispatch: # 이 설정이 있어야 '수동 실행' 버튼이 생깁니다.
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run script
+        env:
+          NAT_API_KEY: ${{ secrets.NAT_API_KEY }}
+        run: python update_script.py # 파이썬 파일명과 일치해야 함
+
+      - name: Commit and Push
+        run: |
+          git config --global user.name "GitHub Action"
+          git config --global user.email "action@github.com"
+          git add .
+          git commit -m "부천 설날 약국 리스트 수동 업데이트" || exit 0
+          git push
