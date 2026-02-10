@@ -98,9 +98,9 @@ def write_markdown(nat_items, gg_status):
 
     content = f"""---
 layout: post
-title: "부천시 설 연휴(2/14~2/20) 약국 운영시간 & 지도 (최종판)"
+title: "부천시 설 연휴(2/14~2/20) 약국 운영시간 & 지도"
 date: {today}
-categories: [ 약국정보 ]
+categories: [ 약국정보 ] [ 설연휴 ]
 featured: true
 author: june
 ---
