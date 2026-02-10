@@ -1,56 +1,83 @@
 import requests
 import xml.etree.ElementTree as ET
 import os
+from datetime import datetime
 
-# API 키 설정 (깃허브 Secrets에 등록한 이름과 맞춰주세요)
+# API 키 가져오기
 NAT_KEY = os.environ.get('NAT_API_KEY')
 
-def get_bucheon_seol_pharmacies():
-    # 전국 약국 API 사용 (부천시 필터링 + 위도/경도 포함됨)
+def get_data():
     url = "http://apis.data.go.kr/B552657/ErmctInsttInfoInqireService/getParmacyListInfoInqire"
     params = {
         'serviceKey': NAT_KEY,
         'Q0': '경기도',
         'Q1': '부천시',
-        'numOfRows': '500' # 부천시 전체 약국을 넉넉히 가져옴
+        'numOfRows': '500'
     }
-    
     response = requests.get(url, params=params)
+    
+    # API 응답 결과 확인을 위해 출력 (Actions 로그에서 볼 수 있음)
+    print(f"API Response Status: {response.status_code}")
+    
     root = ET.fromstring(response.content)
+    items = root.findall('.//item')
+    print(f"검색된 총 약국 수: {len(items)}") # 로그 확인용
     
-    seol_pharmacies = []
-    
-    for item in root.findall('.//item'):
-        # 1. 설날(공휴일) 운영 여부 확인 (dutyTime8s: 공휴일 시작시간)
-        seol_start = item.findtext('dutyTime8s')
-        seol_end = item.findtext('dutyTime8e')
+    pharm_list = []
+    for item in items:
+        name = item.findtext('dutyName')
+        tel = item.findtext('dutyTel1')
+        addr = item.findtext('dutyAddr')
+        lat = item.findtext('wgs84Lat')
+        lon = item.findtext('wgs84Lon')
         
-        # 2. 설날에 운영 계획이 있는 곳만 추출
-        if seol_start and seol_end:
-            name = item.findtext('dutyName')
-            tel = item.findtext('dutyTel1')
-            addr = item.findtext('dutyAddr')
-            
-            # 3. 위도(wgs84Lat) 및 경도(wgs84Lon) 좌표 추출
-            lat = item.findtext('wgs84Lat')
-            lon = item.findtext('wgs84Lon')
-            
-            seol_pharmacies.append({
-                'name': name,
-                'address': addr,
-                'tel': tel,
-                'time': f"{seol_start[:2]}:{seol_start[2:]}~{seol_end[:2]}:{seol_end[2:]}",
-                'lat': lat,
-                'lon': lon
-            })
-            
-    return seol_pharmacies
+        # 임시로 '모든 약국'을 다 가져오게 수정 (테스트용)
+        # 나중에 설날 데이터가 확실히 확인되면 조건을 다시 넣으세요.
+        pharm_list.append({
+            'name': name,
+            'address': addr,
+            'tel': tel,
+            'lat': lat,
+            'lon': lon
+        })
+    return pharm_list
 
-# 데이터 확인용 출력
-pharm_data = get_bucheon_seol_pharmacies()
-print(f"부천시 설날 운영 약국 총 {len(pharm_data)}곳 발견!")
+def write_markdown(pharm_list):
+    today = datetime.now().strftime('%Y-%m-%d')
+    filename = f"_posts/{today}-bucheon-pharmacy-list.md"
+    
+    # 파일이 생성되는지 확인하기 위한 로그
+    print(f"파일 생성 시도: {filename}")
+    
+    content = f"""---
+layout: post
+title: "부천시 약국 운영 현황 (테스트)"
+date: {today}
+---
 
-# 예시: 첫 번째 약국의 위도/경도 확인
+## 부천시 약국 리스트
+데이터 추출 시간: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+
+| 약국명 | 주소 | 전화번호 | 좌표 |
+| :--- | :--- | :--- | :--- |
+"""
+    if not pharm_list:
+        content += "| 데이터가 없습니다 | - | - | - |\n"
+    else:
+        for p in pharm_list[:50]: # 너무 많으면 블로그가 무거워지니 일단 50개만
+            content += f"| {p['name']} | {p['address']} | {p['tel']} | {p['lat']},{p['lon']} |\n"
+        
+    # _posts 폴더가 없을 경우를 대비
+    if not os.path.exists('_posts'):
+        os.makedirs('_posts')
+        
+    with open(filename, 'w', encoding='utf-8') as f:
+        f.write(content)
+    print("파일 쓰기 완료!")
+
+# 실행
+data = get_data()
+write_markdown(data)
 if pharm_data:
     print(f"약국명: {pharm_data[0]['name']}")
     print(f"좌표: {pharm_data[0]['lat']}, {pharm_data[0]['lon']}")
