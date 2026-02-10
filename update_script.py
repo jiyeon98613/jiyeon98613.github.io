@@ -56,7 +56,6 @@ def write_markdown(nat_items, gg_status):
         lat = item.findtext('wgs84Lat')
         lon = item.findtext('wgs84Lon')
         
-        # 검색용 쿼리 인코딩 (네이버, 구글용)
         encoded_name = urllib.parse.quote(f"부천 {name}")
         naver_url = f"https://search.naver.com/search.naver?query={encoded_name}"
         google_url = f"https://www.google.com/maps/search/{encoded_name}"
@@ -75,7 +74,6 @@ def write_markdown(nat_items, gg_status):
             f_e = format_time(e)
             
             if f_s:
-                # 종료시간이 없으면 ??:?? 대신 '정보확인' 텍스트와 구글링크 암시
                 display_time = f"{f_s} ~ {f_e if f_e else '시간확인'}"
                 times.append(display_time)
                 open_count += 1
@@ -84,9 +82,11 @@ def write_markdown(nat_items, gg_status):
 
         if lat and lon:
             markers += f'L.marker([{lat}, {lon}]).addTo(map).bindPopup("<b>{name}</b><br><a href=\'{naver_url}\' target=\'_blank\'>네이버 확인</a> | <a href=\'{google_url}\' target=\'_blank\'>구글 확인</a>");\n        '
-            groups[open_count].append({"name": name, "tel": tel, "addr": addr, "times": times, "n_url": naver_url, "g_url": google_url})
+            groups[open_count].append({
+                "name": name, "tel": tel, "addr": addr, "times": times, 
+                "n_url": naver_url, "g_url": google_url
+            })
 
-    # 마크다운 내용 구성 (바로가기 메뉴 및 표)
     labels = {i: f"{i}일 운영" for i in range(1, 8)}
     labels[7] = "7일 모두 운영(연중무휴)"
     
@@ -96,7 +96,6 @@ def write_markdown(nat_items, gg_status):
             menu_html += f'<a href="#group-{i}" style="margin: 0 8px; text-decoration: none; color: #007bff; font-weight: bold; font-size: 14px;">[{labels[i]}]</a> '
     menu_html += '</div>'
 
-# update_script.py 파일 내의 content 생성 부분을 이렇게 바꿔보세요
     content = f"""---
 layout: post
 title: "부천시 설 연휴(2/14~2/20) 약국 운영시간 안내"
@@ -106,8 +105,8 @@ categories: [ 약국정보 ]
 featured: true
 ---
 
-부천시 내 약국의 설 연휴 운영 정보를 운영 일수별로 정리했습니다. 
-**마감 시간이 '시간확인'으로 표시된 곳은 아래 버튼을 눌러 정확한 시간을 확인해 보세요.**
+부천시 내 약국의 설 연휴 운영 정보를 운영 일수별로 정리했습니다.  
+**마감 시간이 '시간확인'으로 표시된 곳은 아래 버튼을 눌러 정확한 운영 시간을 확인해 보세요.**
 
 ### 📍 약국 위치 지도
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -121,30 +120,33 @@ featured: true
 
 ### ⚡ 빠른 이동
 {menu_html}
-
 """
+
     for i in range(7, 0, -1):
         if not groups[i]: continue
         content += f'\n<h2 id="group-{i}" style="padding-top: 60px; margin-top: -30px; border-bottom: 2px solid #007bff; display: inline-block;">🏥 {labels[i]} ({len(groups[i])}곳)</h2>\n'
         for pharm in groups[i]:
+            # 새 레이아웃 적용된 테이블 HTML
             table_html = f"""
-<table style="width:100%; border: 1px solid #ddd; border-collapse: collapse; margin-bottom: 25px; font-size: 12px; box-shadow: 2px 2px 5px rgba(0,0,0,0.05);">
-  <tr style="background: #f8f9fa;">
-    <td style="width: 25%; padding: 10px; border: 1px solid #ddd; font-weight: bold; font-size: 14px;">
-        {pharm['name']}
-        <div style="margin-top: 5px;">
-            <a href="{pharm['n_url']}" target="_blank" style="display: inline-block; padding: 2px 5px; background: #03cf5d; color: white; border-radius: 3px; text-decoration: none; font-size: 10px;">N 플레이스</a>
-            <a href="{pharm['g_url']}" target="_blank" style="display: inline-block; padding: 2px 5px; background: #4285f4; color: white; border-radius: 3px; text-decoration: none; font-size: 10px;">G 지도</a>
-        </div>
+<table style="width:100%; border: 1px solid #ddd; border-collapse: collapse; margin-bottom: 30px; font-size: 12px; table-layout: fixed; word-break: break-all;">
+  <tr style="background: #fdfdfd;">
+    <td colspan="8" style="padding: 10px; border: 1px solid #ddd; color: #555;">
+      <span style="font-weight: bold; color: #007bff;">📍 주소:</span> {pharm['addr']}
     </td>
-    {"".join([f'<td style="width: 10.7%; padding: 5px; border: 1px solid #ddd; text-align: center; font-weight: bold; background: {"#e7f3ff" if d["is_holiday"] else "#fff"};">{d["label"]}</td>' for d in schedule_config])}
   </tr>
   <tr>
-    <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold; color: #e67e22;">📞 {pharm['tel']}</td>
-    {"".join([f'<td rowspan="2" style="text-align: center; border: 1px solid #ddd; color: {"#d35400" if "시간확인" in t else "#2c3e50"};">{t}</td>' for t in pharm['times']])}
+    <td rowspan="2" style="width: 25%; padding: 10px; border: 1px solid #ddd; vertical-align: middle; text-align: center; background: #fff;">
+      <div style="font-size: 14px; font-weight: bold; margin-bottom: 8px; color: #2c3e50;">{pharm['name']}</div>
+      <div style="margin-bottom: 8px;">
+        <a href="{pharm['n_url']}" target="_blank" style="display: inline-block; padding: 3px 6px; background: #03cf5d; color: white; border-radius: 3px; text-decoration: none; font-size: 10px;">N 플레이스</a>
+        <a href="{pharm['g_url']}" target="_blank" style="display: inline-block; padding: 3px 6px; background: #4285f4; color: white; border-radius: 3px; text-decoration: none; font-size: 10px;">G 지도</a>
+      </div>
+      <div style="font-size: 11px; color: #e67e22; font-weight: bold;">📞 {pharm['tel']}</div>
+    </td>
+    {"".join([f'<td style="padding: 6px 2px; border: 1px solid #ddd; text-align: center; font-weight: bold; background: {"#e7f3ff" if d["is_holiday"] else "#f8f9fa"}; font-size: 11px;">{d["label"]}</td>' for d in schedule_config])}
   </tr>
-  <tr>
-    <td style="padding: 10px; border: 1px solid #ddd; color: #7f8c8d;">📍 {pharm['addr']}</td>
+  <tr style="text-align: center; background: #fff;">
+    {"".join([f'<td style="padding: 10px 2px; border: 1px solid #ddd; font-size: 11px; color: {"#d35400" if "시간확인" in t else "#2c3e50"};">{"<strong>" if t != "휴무" else ""}{t.replace(" ~ ", "<br>~")}{"</strong>" if t != "휴무" else ""}</td>' for t in pharm['times']])}
   </tr>
 </table>
 """
@@ -156,4 +158,5 @@ featured: true
 if __name__ == "__main__":
     gg_status = get_gg_status()
     nat_items = get_nat_data()
-    if nat_items: write_markdown(nat_items, gg_status)
+    if nat_items:
+        write_markdown(nat_items, gg_status)
