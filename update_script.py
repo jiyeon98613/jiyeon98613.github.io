@@ -96,13 +96,14 @@ def write_markdown(nat_items, gg_status):
             menu_html += f'<a href="#group-{i}" style="margin: 0 8px; text-decoration: none; color: #007bff; font-weight: bold; font-size: 14px;">[{labels[i]}]</a> '
     menu_html += '</div>'
 
+# update_script.py 파일 내의 content 생성 부분을 이렇게 바꿔보세요
     content = f"""---
 layout: post
-title: "부천시 설 연휴(2/14~2/20) 약국 운영시간 & 지도"
-date: {today}
-categories: [ 약국정보 ] [ 설연휴 ]
-featured: true
+title: "부천시 설 연휴(2/14~2/20) 약국 운영시간 안내"
 author: june
+date: {today}
+categories: [ 약국정보 ]
+featured: true
 ---
 
 부천시 내 약국의 설 연휴 운영 정보를 운영 일수별로 정리했습니다. 
