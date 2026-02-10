@@ -78,6 +78,11 @@ date: {today}
 # 실행
 data = get_data()
 write_markdown(data)
-if pharm_data:
-    print(f"약국명: {pharm_data[0]['name']}")
-    print(f"좌표: {pharm_data[0]['lat']}, {pharm_data[0]['lon']}")
+# 실행부 (맨 아래)
+if __name__ == "__main__":
+    data = get_data()
+    if data:
+        write_markdown(data)
+        print(f"성공: 총 {len(data)}개의 약국 리스트를 파일로 만들었습니다.")
+    else:
+        print("실패: 가져온 데이터가 없습니다.")
