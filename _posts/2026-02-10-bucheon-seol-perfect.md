@@ -1,10 +1,10 @@
 ---
 layout: post
-title: "부천시 설 연휴(2/14~2/20) 약국 운영시간 & 지도"
-date: 2026-02-10
-categories: [ 약국정보 ] [ 설연휴 ]
-featured: true
+title: "부천시 설 연휴(2/14~2/20) 약국 운영시간 안내"
 author: june
+date: 2026-02-10
+categories: [ 약국정보 ]
+featured: true
 ---
 
 부천시 내 약국의 설 연휴 운영 정보를 운영 일수별로 정리했습니다. 
