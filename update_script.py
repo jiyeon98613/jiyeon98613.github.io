@@ -19,13 +19,28 @@ def get_data():
         return root.findall('.//item')
     return []
 
+def format_time(t_str):
+    if not t_str or len(t_str) < 4: return "휴무"
+    return f"{t_str[:2]}:{t_str[2:4]}"
+
 def write_markdown(items):
     today = datetime.now().strftime('%Y-%m-%d')
-    filename = f"_posts/{today}-bucheon-pharmacy-list.md"
+    filename = f"_posts/{today}-bucheon-seol-weekly.md"
     
-    # 지도 마커 데이터 생성
+    # 날짜와 해당 날짜의 요일/공휴일 속성 정의 (2/14 토 ~ 2/20 금)
+    # 8번은 공휴일(설 연휴), 나머지는 요일 번호
+    schedule_config = [
+        {"label": "2/14(토)", "code": "6"},
+        {"label": "2/15(일)", "code": "7"},
+        {"label": "2/16(월)", "code": "1"},
+        {"label": "2/17(화)", "code": "8"}, # 설 연휴 (공휴일)
+        {"label": "2/18(수)", "code": "8"}, # 설 연휴 (공휴일)
+        {"label": "2/19(목)", "code": "8"}, # 설 연휴 (공휴일)
+        {"label": "2/20(금)", "code": "5"}
+    ]
+    
     markers = ""
-    table_rows = ""
+    table_html = ""
     
     for item in items:
         name = item.findtext('dutyName')
@@ -34,49 +49,64 @@ def write_markdown(items):
         lat = item.findtext('wgs84Lat')
         lon = item.findtext('wgs84Lon')
         
-        # 운영시간 (설날/공휴일은 보통 dutyTime8s 또는 당일 요일 확인)
-        # 여기서는 기본적으로 월요일(1)부터 일요일(7), 공휴일(8) 중 공휴일 시간 우선 추출
-        time = item.findtext('dutyTime8s') or item.findtext('dutyTime1s') or "정보없음"
-        if time != "정보없음" and len(time) > 4:
-            time = f"{time[:2]}:{time[2:4]} ~ {time[4:6]}:{time[6:8]}"
+        times = []
+        for day in schedule_config:
+            code = day["code"]
+            s = item.findtext(f'dutyTime{code}s')
+            e = item.findtext(f'dutyTime{code}e')
+            times.append(f"{format_time(s)} ~ {format_time(e)}")
 
         if lat and lon:
-            # 지도 마커 코드
-            markers += f'L.marker([{lat}, {lon}]).addTo(map).bindPopup("<b>{name}</b><br>{time}");\n        '
-            # 표 내용 (좌표 제외)
-            table_rows += f"| {name} | {addr} | {tel} | {time} |\n"
+            markers += f'L.marker([{lat}, {lon}]).addTo(map).bindPopup("<b>{name}</b><br>전화: {tel}");\n        '
+            
+            # HTML 표 구조 (왼쪽 3단 정보 / 오른쪽 7단 시간)
+            table_html += f"""
+<table style="width:100%; border: 1px solid #ddd; border-collapse: collapse; margin-bottom: 25px; font-size: 13px;">
+  <tr style="background: #f4f4f4;">
+    <td style="width: 25%; padding: 10px; border: 1px solid #ddd; font-weight: bold; color: #2c3e50;">{name}</td>
+    {"".join([f'<td style="width: 10.7%; padding: 5px; border: 1px solid #ddd; text-align: center; font-weight: bold;">{d["label"]}</td>' for d in schedule_config])}
+  </tr>
+  <tr>
+    <td style="padding: 10px; border: 1px solid #ddd; color: #34495e;">📞 {tel}</td>
+    {"".join([f'<td rowspan="2" style="text-align: center; border: 1px solid #ddd; font-size: 11px;">{t}</td>' for t in times])}
+  </tr>
+  <tr>
+    <td style="padding: 10px; border: 1px solid #ddd; font-size: 11px; color: #7f8c8d;">📍 {addr}</td>
+  </tr>
+</table>
+"""
 
     content = f"""---
 layout: post
-title: "[{today}] 부천시 설날 운영 약국 지도 안내"
+title: "부천시 설 연휴 주간(2/14~2/20) 약국 운영 안내"
 date: {today}
 categories: [ 약국정보 ]
 featured: true
+author: sal
 ---
 
-### 📍 부천시 약국 위치 지도
+2026년 설 연휴 기간 동안 부천시 내 약국 운영 시간입니다. 
+**공휴일 특성상 운영 시간이 변동될 수 있으니, 방문 전 반드시 전화로 확인하시기 바랍니다.**
+
+### 📍 약국 위치 지도
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<div id="map" style="height: 450px; border-radius: 10px; margin-bottom: 20px;"></div>
+<div id="map" style="height: 400px; border-radius: 10px; margin-bottom: 30px; border: 1px solid #ccc;"></div>
 <script>
     var map = L.map('map').setView([37.503, 126.766], 13);
-    L.tileLayer('https://{{s}}.tile.openstreetmap.org/{{z}}/{{x}}/{{y}}.png', {{
-        attribution: '&copy; OpenStreetMap'
-    }}).addTo(map);
+    L.tileLayer('https://{{s}}.tile.openstreetmap.org/{{z}}/{{x}}/{{y}}.png').addTo(map);
     {markers}
 </script>
 
-### 📋 상세 리스트 (운영시간 포함)
-
-| 약국명 | 주소 | 전화번호 | 운영시간 |
-| :--- | :--- | :--- | :--- |
-{table_rows}
+### 📋 약국별 상세 운영 시간
+{table_html}
 """
     with open(filename, 'w', encoding='utf-8') as f:
         f.write(content)
 
 if __name__ == "__main__":
     data = get_data()
+    if data: write_markdown(data)
     if data:
         write_markdown(data)
         print(f"성공: {len(data)}개 약국 지도 및 표 생성 완료")
