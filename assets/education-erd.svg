@@ -1,0 +1,129 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1325" role="img" aria-labelledby="title desc">
+<title id="title">Education database ERD: 15 tables and 20 foreign keys</title>
+<desc id="desc">Templates, instances, solutions, steps, standards, concepts, references and load batches. Dashed lines identify load batch references. Two standard map foreign keys reference the same standard table.</desc>
+<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6" fill="none" stroke="#789382" stroke-width="1.2"/></marker></defs>
+<rect width="1600" height="1325" rx="20" fill="#f0f4ed"/>
+<text x="45" y="48" font-family="Arial,sans-serif" font-size="18" fill="#486f56" letter-spacing="2">EDUCATION DATABASE / 15 TABLES · 20 FOREIGN KEYS</text>
+<path d="M 190 255 C 190.0 255, 190.0 420, 190 420" fill="none" stroke="#789382" stroke-width="1.7" opacity="0.85"  marker-end="url(#arrow)"/>
+<path d="M 325 497 C 595.0 497, 595.0 177, 865 177" fill="none" stroke="#789382" stroke-width="1.7" opacity="0.85"  marker-end="url(#arrow)"/>
+<path d="M 325 497 C 390.0 497, 390.0 497, 455 497" fill="none" stroke="#789382" stroke-width="1.7" opacity="0.85"  marker-end="url(#arrow)"/>
+<path d="M 735 177 C 800.0 177, 800.0 177, 865 177" fill="none" stroke="#789382" stroke-width="1.7" opacity="0.85"  marker-end="url(#arrow)"/>
+<path d="M 735 177 C 1005.0 177, 1005.0 177, 1275 177" fill="none" stroke="#789382" stroke-width="1.7" opacity="0.85"  marker-end="url(#arrow)"/>
+<path d="M 600 255 C 600.0 255, 600.0 420, 600 420" fill="none" stroke="#789382" stroke-width="1.7" opacity="0.85"  marker-end="url(#arrow)"/>
+<path d="M 600 255 C 600.0 255, 600.0 740, 600 740" fill="none" stroke="#789382" stroke-width="1.7" opacity="0.85"  marker-end="url(#arrow)"/>
+<path d="M 735 497 C 800.0 497, 800.0 497, 865 497" fill="none" stroke="#789382" stroke-width="1.7" opacity="0.85"  marker-end="url(#arrow)"/>
+<path d="M 1275 497 C 1210.0 497, 1210.0 497, 1145 497" fill="none" stroke="#789382" stroke-width="1.7" opacity="0.85"  marker-end="url(#arrow)"/>
+<path d="M 1420 575 C 1420.0 575, 1420.0 740, 1420 740" fill="none" stroke="#789382" stroke-width="1.7" opacity="0.85"  marker-end="url(#arrow)"/>
+<path d="M 1275 497 C 1005.0 497, 1005.0 1137, 735 1137" fill="none" stroke="#789382" stroke-width="1.7" opacity="0.85"  marker-end="url(#arrow)"/>
+<path d="M 1275 1137 C 1005.0 1137, 1005.0 1137, 735 1137" fill="none" stroke="#789382" stroke-width="1.7" opacity="0.85"  marker-end="url(#arrow)"/>
+<path d="M 865 817 C 800.0 817, 800.0 817, 735 817" fill="none" stroke="#789382" stroke-width="1.7" opacity="0.85"  marker-end="url(#arrow)"/>
+<path d="M 1145 817 C 1210.0 817, 1210.0 817, 1275 817" fill="none" stroke="#789382" stroke-width="1.7" opacity="0.85"  marker-end="url(#arrow)"/>
+<path d="M 985 895 C 985.0 895, 985.0 1060, 985 1060" fill="none" stroke="#789382" stroke-width="1.7" opacity="0.85"  marker-end="url(#arrow)"/>
+<path d="M 1035 895 C 1035.0 895, 1035.0 1060, 1035 1060" fill="none" stroke="#789382" stroke-width="1.7" opacity="0.85"  marker-end="url(#arrow)"/>
+<path d="M 325 817 C 390.0 817, 390.0 177, 455 177" fill="none" stroke="#acbba5" stroke-width="1.7" opacity="0.65" stroke-dasharray="6 6" marker-end="url(#arrow)"/>
+<path d="M 325 817 C 595.0 817, 595.0 177, 865 177" fill="none" stroke="#acbba5" stroke-width="1.7" opacity="0.65" stroke-dasharray="6 6" marker-end="url(#arrow)"/>
+<path d="M 325 817 C 390.0 817, 390.0 497, 455 497" fill="none" stroke="#acbba5" stroke-width="1.7" opacity="0.65" stroke-dasharray="6 6" marker-end="url(#arrow)"/>
+<path d="M 325 817 C 800.0 817, 800.0 497, 1275 497" fill="none" stroke="#acbba5" stroke-width="1.7" opacity="0.65" stroke-dasharray="6 6" marker-end="url(#arrow)"/>
+<g id="REFERENCE_SOURCE_TYPE"><rect x="45" y="100" width="280" height="155" rx="10" fill="#fff" stroke="#bccfb5"/>
+<text x="61" y="131" font-family="Arial,sans-serif" font-size="14" font-weight="700" fill="#315a3f">REFERENCE_SOURCE_TYPE</text>
+<line x1="60" x2="310" y1="147" y2="147" stroke="#dce6d5"/>
+<text x="61" y="176" font-family="monospace" font-size="12" fill="#6c7e65">PK code</text>
+<text x="61" y="199" font-family="monospace" font-size="12" fill="#6c7e65">label</text>
+<text x="61" y="222" font-family="monospace" font-size="12" fill="#6c7e65">is_active</text>
+</g>
+<g id="REFERENCE"><rect x="45" y="420" width="280" height="155" rx="10" fill="#fff" stroke="#bccfb5"/>
+<text x="61" y="451" font-family="Arial,sans-serif" font-size="14" font-weight="700" fill="#315a3f">REFERENCE</text>
+<line x1="60" x2="310" y1="467" y2="467" stroke="#dce6d5"/>
+<text x="61" y="496" font-family="monospace" font-size="12" fill="#6c7e65">PK reference_id</text>
+<text x="61" y="519" font-family="monospace" font-size="12" fill="#6c7e65">FK source_type</text>
+<text x="61" y="542" font-family="monospace" font-size="12" fill="#6c7e65">title / license / trust_score</text>
+</g>
+<g id="LOAD_BATCH"><rect x="45" y="740" width="280" height="155" rx="10" fill="#fff" stroke="#bccfb5"/>
+<text x="61" y="771" font-family="Arial,sans-serif" font-size="14" font-weight="700" fill="#315a3f">LOAD_BATCH</text>
+<line x1="60" x2="310" y1="787" y2="787" stroke="#dce6d5"/>
+<text x="61" y="816" font-family="monospace" font-size="12" fill="#6c7e65">PK load_id</text>
+<text x="61" y="839" font-family="monospace" font-size="12" fill="#6c7e65">source / script_git_sha</text>
+<text x="61" y="862" font-family="monospace" font-size="12" fill="#6c7e65">status / loaded_at</text>
+</g>
+<g id="PROBLEM_TEMPLATE"><rect x="455" y="100" width="280" height="155" rx="10" fill="#234f3d" stroke="#234f3d"/>
+<text x="471" y="131" font-family="Arial,sans-serif" font-size="14" font-weight="700" fill="#edf4e9">PROBLEM_TEMPLATE</text>
+<line x1="470" x2="720" y1="147" y2="147" stroke="#ffffff35"/>
+<text x="471" y="176" font-family="monospace" font-size="12" fill="#c8ddbf">PK problem_template_id</text>
+<text x="471" y="199" font-family="monospace" font-size="12" fill="#c8ddbf">FK load_id</text>
+<text x="471" y="222" font-family="monospace" font-size="12" fill="#c8ddbf">template_detail / grade</text>
+</g>
+<g id="PROBLEM_INSTANCE"><rect x="865" y="100" width="280" height="155" rx="10" fill="#fff" stroke="#bccfb5"/>
+<text x="881" y="131" font-family="Arial,sans-serif" font-size="14" font-weight="700" fill="#315a3f">PROBLEM_INSTANCE</text>
+<line x1="880" x2="1130" y1="147" y2="147" stroke="#dce6d5"/>
+<text x="881" y="176" font-family="monospace" font-size="12" fill="#6c7e65">PK problem_instance_id</text>
+<text x="881" y="199" font-family="monospace" font-size="12" fill="#6c7e65">FK template / reference / load</text>
+<text x="881" y="222" font-family="monospace" font-size="12" fill="#6c7e65">source_data_name / answer</text>
+</g>
+<g id="DIFFICULTY_ASSESSMENT"><rect x="1275" y="100" width="280" height="155" rx="10" fill="#fff" stroke="#bccfb5"/>
+<text x="1291" y="131" font-family="Arial,sans-serif" font-size="14" font-weight="700" fill="#315a3f">DIFFICULTY_ASSESSMENT</text>
+<line x1="1290" x2="1540" y1="147" y2="147" stroke="#dce6d5"/>
+<text x="1291" y="176" font-family="monospace" font-size="12" fill="#6c7e65">PK assessment_id</text>
+<text x="1291" y="199" font-family="monospace" font-size="12" fill="#6c7e65">FK problem_template_id</text>
+<text x="1291" y="222" font-family="monospace" font-size="12" fill="#6c7e65">assessor / difficulty / method</text>
+</g>
+<g id="SOLUTION"><rect x="455" y="420" width="280" height="155" rx="10" fill="#fff" stroke="#bccfb5"/>
+<text x="471" y="451" font-family="Arial,sans-serif" font-size="14" font-weight="700" fill="#315a3f">SOLUTION</text>
+<line x1="470" x2="720" y1="467" y2="467" stroke="#dce6d5"/>
+<text x="471" y="496" font-family="monospace" font-size="12" fill="#6c7e65">PK solution_id</text>
+<text x="471" y="519" font-family="monospace" font-size="12" fill="#6c7e65">FK template / reference / load</text>
+<text x="471" y="542" font-family="monospace" font-size="12" fill="#6c7e65">approach_type</text>
+</g>
+<g id="SOLUTION_STEP_MAP"><rect x="865" y="420" width="280" height="155" rx="10" fill="#fff" stroke="#bccfb5"/>
+<text x="881" y="451" font-family="Arial,sans-serif" font-size="14" font-weight="700" fill="#315a3f">SOLUTION_STEP_MAP</text>
+<line x1="880" x2="1130" y1="467" y2="467" stroke="#dce6d5"/>
+<text x="881" y="496" font-family="monospace" font-size="12" fill="#6c7e65">PK, FK solution_id</text>
+<text x="881" y="519" font-family="monospace" font-size="12" fill="#6c7e65">PK, FK solution_step_id</text>
+<text x="881" y="542" font-family="monospace" font-size="12" fill="#6c7e65">sequence</text>
+</g>
+<g id="SOLUTION_STEP"><rect x="1275" y="420" width="280" height="155" rx="10" fill="#fff" stroke="#bccfb5"/>
+<text x="1291" y="451" font-family="Arial,sans-serif" font-size="14" font-weight="700" fill="#315a3f">SOLUTION_STEP</text>
+<line x1="1290" x2="1540" y1="467" y2="467" stroke="#dce6d5"/>
+<text x="1291" y="496" font-family="monospace" font-size="12" fill="#6c7e65">PK solution_step_id</text>
+<text x="1291" y="519" font-family="monospace" font-size="12" fill="#6c7e65">FK load_id</text>
+<text x="1291" y="542" font-family="monospace" font-size="12" fill="#6c7e65">step_text</text>
+</g>
+<g id="TEMPLATE_STANDARD"><rect x="455" y="740" width="280" height="155" rx="10" fill="#fff" stroke="#bccfb5"/>
+<text x="471" y="771" font-family="Arial,sans-serif" font-size="14" font-weight="700" fill="#315a3f">TEMPLATE_STANDARD</text>
+<line x1="470" x2="720" y1="787" y2="787" stroke="#dce6d5"/>
+<text x="471" y="816" font-family="monospace" font-size="12" fill="#6c7e65">PK, FK problem_template_id</text>
+<text x="471" y="839" font-family="monospace" font-size="12" fill="#6c7e65">PK, FK achievement_standard_id</text>
+</g>
+<g id="ACHIEVEMENT_STANDARD"><rect x="865" y="740" width="280" height="155" rx="10" fill="#fff" stroke="#bccfb5"/>
+<text x="881" y="771" font-family="Arial,sans-serif" font-size="14" font-weight="700" fill="#315a3f">ACHIEVEMENT_STANDARD</text>
+<line x1="880" x2="1130" y1="787" y2="787" stroke="#dce6d5"/>
+<text x="881" y="816" font-family="monospace" font-size="12" fill="#6c7e65">PK achievement_standard_id</text>
+<text x="881" y="839" font-family="monospace" font-size="12" fill="#6c7e65">code / revision_year</text>
+<text x="881" y="862" font-family="monospace" font-size="12" fill="#6c7e65">description</text>
+</g>
+<g id="STEP_STANDARD"><rect x="1275" y="740" width="280" height="155" rx="10" fill="#fff" stroke="#bccfb5"/>
+<text x="1291" y="771" font-family="Arial,sans-serif" font-size="14" font-weight="700" fill="#315a3f">STEP_STANDARD</text>
+<line x1="1290" x2="1540" y1="787" y2="787" stroke="#dce6d5"/>
+<text x="1291" y="816" font-family="monospace" font-size="12" fill="#6c7e65">PK, FK solution_step_id</text>
+<text x="1291" y="839" font-family="monospace" font-size="12" fill="#6c7e65">PK, FK achievement_standard_id</text>
+</g>
+<g id="STEP_CONCEPT"><rect x="455" y="1060" width="280" height="155" rx="10" fill="#fff" stroke="#bccfb5"/>
+<text x="471" y="1091" font-family="Arial,sans-serif" font-size="14" font-weight="700" fill="#315a3f">STEP_CONCEPT</text>
+<line x1="470" x2="720" y1="1107" y2="1107" stroke="#dce6d5"/>
+<text x="471" y="1136" font-family="monospace" font-size="12" fill="#6c7e65">PK, FK solution_step_id</text>
+<text x="471" y="1159" font-family="monospace" font-size="12" fill="#6c7e65">PK, FK core_concept_id</text>
+</g>
+<g id="STANDARD_MAP"><rect x="865" y="1060" width="280" height="155" rx="10" fill="#fff" stroke="#bccfb5"/>
+<text x="881" y="1091" font-family="Arial,sans-serif" font-size="14" font-weight="700" fill="#315a3f">STANDARD_MAP</text>
+<line x1="880" x2="1130" y1="1107" y2="1107" stroke="#dce6d5"/>
+<text x="881" y="1136" font-family="monospace" font-size="12" fill="#6c7e65">PK, FK from_standard_id</text>
+<text x="881" y="1159" font-family="monospace" font-size="12" fill="#6c7e65">PK, FK to_standard_id</text>
+<text x="881" y="1182" font-family="monospace" font-size="12" fill="#6c7e65">relation_type</text>
+</g>
+<g id="CORE_CONCEPT"><rect x="1275" y="1060" width="280" height="155" rx="10" fill="#fff" stroke="#bccfb5"/>
+<text x="1291" y="1091" font-family="Arial,sans-serif" font-size="14" font-weight="700" fill="#315a3f">CORE_CONCEPT</text>
+<line x1="1290" x2="1540" y1="1107" y2="1107" stroke="#dce6d5"/>
+<text x="1291" y="1136" font-family="monospace" font-size="12" fill="#6c7e65">PK core_concept_id</text>
+<text x="1291" y="1159" font-family="monospace" font-size="12" fill="#6c7e65">title / concept_definition</text>
+</g>
+<text x="45" y="1280" font-family="Arial,sans-serif" font-size="14" fill="#71846a">Solid: entity reference · Dashed: load batch reference · Common timestamps omitted</text>
+<text x="45" y="1303" font-family="Arial,sans-serif" font-size="12" fill="#8b9b85">Based on the July 2026 schema design. Structure verification only; no ingestion claim.</text></svg>

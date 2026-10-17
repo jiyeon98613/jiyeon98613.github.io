@@ -1,0 +1,141 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="686" viewBox="0 0 1440 686" role="img" aria-labelledby="title desc">
+<title id="title">건강보험 청구 시스템 ERD</title>
+<desc id="desc">실제 runtime 스키마의 6개 테이블 발췌. 화살표는 외래키에서 참조 대상으로 향합니다. 처방전의 자기참조, 월별 관리와 기간별 청구, 월별 근거와 청구별 첨부 관계를 표시합니다.</desc>
+<defs><marker id="fk-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10" fill="none" stroke="#71839a" stroke-width="1.5"/></marker></defs>
+<style>text{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;fill:#344256}.table-name{font-size:13px;font-weight:600;letter-spacing:-.3px}.table-note{font-family:Pretendard,'Noto Sans KR',sans-serif;font-size:11px;fill:#77818e}.column{font-size:12px}.key{font-size:10px;fill:#52749d}.type{font-size:10px;fill:#929aa5}.edge-label{font-size:10px;fill:#65788e}.legend{font-family:Pretendard,'Noto Sans KR',sans-serif;font-size:11px;fill:#78828f}.edge{fill:none;stroke:#8394a8;stroke-width:1.2;marker-end:url(#fk-arrow)}</style>
+<rect width="100%" height="100%" fill="white"/>
+
+<path class="edge" d="M520 181 H412"/>
+<path class="edge" d="M730 292 V366"/>
+<path class="edge" d="M208 366 V238"/>
+<path class="edge" d="M1030 455 H940"/>
+<path class="edge" d="M1213 265 V366"/>
+<path class="edge" d="M1260 60 V24 H252 V60"/>
+<path class="edge" d="M1220 598 V638 H234 V598"/>
+<path class="edge" d="M44 512 H16 V445 H44"/>
+<rect x="431" y="161" width="53" height="20" fill="white"/><text x="436" y="174" class="edge-label">doc_id</text>
+<rect x="739" y="322" width="111" height="20" fill="white"/><text x="744" y="335" class="edge-label">billing_cycle_id</text>
+<rect x="218" y="296" width="84" height="20" fill="white"/><text x="223" y="309" class="edge-label">doc_id · UQ</text>
+<rect x="945" y="434" width="55" height="20" fill="white"/><text x="950" y="447" class="edge-label">N : 1</text>
+<rect x="1220" y="309" width="70" height="20" fill="white"/><text x="1225" y="322" class="edge-label">claim_id</text>
+<rect x="698" y="11" width="58" height="20" fill="white"/><text x="703" y="24" class="edge-label">doc_id</text>
+<rect x="711" y="625" width="51" height="20" fill="white"/><text x="716" y="638" class="edge-label">ps_id</text>
+<rect x="44" y="60" width="368" height="178" rx="3" fill="white" stroke="#ccd4de"/>
+<path d="M44 112 H412" stroke="#dce2e9"/>
+<text x="59" y="82" class="table-name">patient_documents</text>
+<text x="59" y="100" class="table-note">환자 문서</text>
+<text x="57" y="136" class="key">PK</text>
+<text x="107" y="136" class="column">doc_id</text>
+<text x="398" y="136" class="type" text-anchor="end">uuid</text>
+<text x="57" y="163" class="key">FK*</text>
+<text x="107" y="163" class="column">pat_id</text>
+<text x="398" y="163" class="type" text-anchor="end">uuid</text>
+<text x="57" y="190" class="key"></text>
+<text x="107" y="190" class="column">doc_type</text>
+<text x="398" y="190" class="type" text-anchor="end">varchar</text>
+<text x="57" y="217" class="key"></text>
+<text x="107" y="217" class="column">file_status</text>
+<text x="398" y="217" class="type" text-anchor="end">varchar</text>
+<rect x="44" y="366" width="368" height="232" rx="3" fill="white" stroke="#ccd4de"/>
+<path d="M44 418 H412" stroke="#dce2e9"/>
+<text x="59" y="388" class="table-name">prescriptions</text>
+<text x="59" y="406" class="table-note">처방전</text>
+<text x="57" y="442" class="key">PK</text>
+<text x="107" y="442" class="column">ps_id</text>
+<text x="398" y="442" class="type" text-anchor="end">uuid</text>
+<text x="57" y="469" class="key">FK·UQ</text>
+<text x="107" y="469" class="column">doc_id</text>
+<text x="398" y="469" class="type" text-anchor="end">uuid</text>
+<text x="57" y="496" class="key"></text>
+<text x="107" y="496" class="column">is_valid</text>
+<text x="398" y="496" class="type" text-anchor="end">boolean</text>
+<text x="57" y="523" class="key">FK</text>
+<text x="107" y="523" class="column">superseded_by_ps_id</text>
+<text x="398" y="523" class="type" text-anchor="end">uuid</text>
+<text x="57" y="550" class="key"></text>
+<text x="107" y="550" class="column">superseded_date</text>
+<text x="398" y="550" class="type" text-anchor="end">date</text>
+<text x="57" y="577" class="key"></text>
+<text x="107" y="577" class="column">start_date / end_date</text>
+<text x="398" y="577" class="type" text-anchor="end">date</text>
+<rect x="520" y="60" width="420" height="232" rx="3" fill="white" stroke="#ccd4de"/>
+<path d="M520 112 H940" stroke="#dce2e9"/>
+<text x="535" y="82" class="table-name">patient_monthly_billing_cycle_records</text>
+<text x="535" y="100" class="table-note">월별 업무·계산 근거</text>
+<text x="533" y="136" class="key">PK</text>
+<text x="583" y="136" class="column">record_id</text>
+<text x="926" y="136" class="type" text-anchor="end">uuid</text>
+<text x="533" y="163" class="key">FK</text>
+<text x="583" y="163" class="column">billing_cycle_id</text>
+<text x="926" y="163" class="type" text-anchor="end">uuid</text>
+<text x="533" y="190" class="key">FK</text>
+<text x="583" y="190" class="column">doc_id</text>
+<text x="926" y="190" class="type" text-anchor="end">uuid</text>
+<text x="533" y="217" class="key">FK*</text>
+<text x="583" y="217" class="column">assigned_history_id</text>
+<text x="926" y="217" class="type" text-anchor="end">uuid</text>
+<text x="533" y="244" class="key">FK*</text>
+<text x="583" y="244" class="column">travel_id</text>
+<text x="926" y="244" class="type" text-anchor="end">uuid</text>
+<text x="533" y="271" class="key">FK*</text>
+<text x="583" y="271" class="column">billing_charge_item_id</text>
+<text x="926" y="271" class="type" text-anchor="end">uuid</text>
+<rect x="520" y="366" width="420" height="178" rx="3" fill="white" stroke="#ccd4de"/>
+<path d="M520 418 H940" stroke="#dce2e9"/>
+<text x="535" y="388" class="table-name">patient_monthly_billing_cycles</text>
+<text x="535" y="406" class="table-note">환자별 월 관리</text>
+<text x="533" y="442" class="key">PK</text>
+<text x="583" y="442" class="column">billing_cycle_id</text>
+<text x="926" y="442" class="type" text-anchor="end">uuid</text>
+<text x="533" y="469" class="key">FK*</text>
+<text x="583" y="469" class="column">pat_id</text>
+<text x="926" y="469" class="type" text-anchor="end">uuid</text>
+<text x="533" y="496" class="key"></text>
+<text x="583" y="496" class="column">billing_month</text>
+<text x="926" y="496" class="type" text-anchor="end">varchar</text>
+<text x="533" y="523" class="key"></text>
+<text x="583" y="523" class="column">status</text>
+<text x="926" y="523" class="type" text-anchor="end">varchar</text>
+<rect x="1030" y="60" width="366" height="205" rx="3" fill="white" stroke="#ccd4de"/>
+<path d="M1030 112 H1396" stroke="#dce2e9"/>
+<text x="1045" y="82" class="table-name">claim_docs</text>
+<text x="1045" y="100" class="table-note">청구별 요구·첨부 문서</text>
+<text x="1043" y="136" class="key">PK</text>
+<text x="1093" y="136" class="column">claim_doc_id</text>
+<text x="1382" y="136" class="type" text-anchor="end">uuid</text>
+<text x="1043" y="163" class="key">FK</text>
+<text x="1093" y="163" class="column">claim_id</text>
+<text x="1382" y="163" class="type" text-anchor="end">uuid</text>
+<text x="1043" y="190" class="key">FK</text>
+<text x="1093" y="190" class="column">doc_id</text>
+<text x="1382" y="190" class="type" text-anchor="end">uuid</text>
+<text x="1043" y="217" class="key"></text>
+<text x="1093" y="217" class="column">requirement_key</text>
+<text x="1382" y="217" class="type" text-anchor="end">varchar</text>
+<text x="1043" y="244" class="key"></text>
+<text x="1093" y="244" class="column">attachment_role</text>
+<text x="1382" y="244" class="type" text-anchor="end">varchar</text>
+<rect x="1030" y="366" width="366" height="232" rx="3" fill="white" stroke="#ccd4de"/>
+<path d="M1030 418 H1396" stroke="#dce2e9"/>
+<text x="1045" y="388" class="table-name">claims</text>
+<text x="1045" y="406" class="table-note">기간별 청구</text>
+<text x="1043" y="442" class="key">PK</text>
+<text x="1093" y="442" class="column">claim_id</text>
+<text x="1382" y="442" class="type" text-anchor="end">uuid</text>
+<text x="1043" y="469" class="key">FK</text>
+<text x="1093" y="469" class="column">billing_cycle_id</text>
+<text x="1382" y="469" class="type" text-anchor="end">uuid</text>
+<text x="1043" y="496" class="key">FK</text>
+<text x="1093" y="496" class="column">ps_id</text>
+<text x="1382" y="496" class="type" text-anchor="end">uuid</text>
+<text x="1043" y="523" class="key"></text>
+<text x="1093" y="523" class="column">period_start</text>
+<text x="1382" y="523" class="type" text-anchor="end">date</text>
+<text x="1043" y="550" class="key"></text>
+<text x="1093" y="550" class="column">period_end</text>
+<text x="1382" y="550" class="type" text-anchor="end">date</text>
+<text x="1043" y="577" class="key"></text>
+<text x="1093" y="577" class="column">billing_rate</text>
+<text x="1382" y="577" class="type" text-anchor="end">integer</text>
+<text x="44" y="674" class="legend">runtime 스키마 · 주요 컬럼 발췌 · 화살표: FK → 참조 대상 · UQ: 유일성 제약 · FK*: 참조 테이블 생략</text>
+</svg>

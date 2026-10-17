@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#ffffff">
+  <title>관리자 콘솔 · 김지연</title>
+  <meta name="description" content="실제 관리자 콘솔 UI와 가상 데이터로 살펴보는 환자·처방·기기 관리, 그리고 DB·백엔드 기여.">
+  <link rel="canonical" href="https://jiyeon98613.github.io/projects/admin-console/">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="ko_KR">
+  <meta property="og:title" content="관리자 콘솔 · 김지연">
+  <meta property="og:description" content="실제 관리자 콘솔 UI와 가상 데이터로 살펴보는 환자·처방·기기 관리, 그리고 DB·백엔드 기여.">
+  <meta property="og:url" content="https://jiyeon98613.github.io/projects/admin-console/">
+  <meta property="og:image" content="https://jiyeon98613.github.io/assets/social-card.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preload" href="/assets/PretendardVariable.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/assets/site.css">
+  <script src="/assets/site.js" defer></script>
+</head>
+<body data-page="console">
+  <a class="skip" href="#main">본문으로 바로가기</a>
+  <header class="site-header">
+    <div class="nav wrap">
+      <a class="wordmark" href="/" aria-label="김지연 포트폴리오 첫 화면">김지연</a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav"><span>메뉴</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h16M4 16h16"/></svg></button>
+      <nav id="site-nav" aria-label="주요 메뉴">
+        <a href="/#work" data-nav="projects">프로젝트</a>
+        <a href="/about/" data-nav="about">소개</a>
+        <a href="https://github.com/jiyeon98613" target="_blank" rel="noopener noreferrer">GitHub <span aria-hidden="true">↗</span></a>
+        
+      </nav>
+    </div>
+  </header>
+  <main id="main"><section class="case-hero wrap">
+  <div class="breadcrumb"><a href="/#work">프로젝트</a><span>/</span><span>관리자 콘솔</span></div>
+  <h1>관리자 콘솔</h1>
+  <p class="lead">환자·수면·처방·기기 관리 화면과 DB·백엔드 담당 범위를 정리했습니다.</p>
+  <dl class="case-meta"><div><dt>구성</dt><dd>2인 협업 · 운영 시스템</dd></div><div><dt>담당</dt><dd>업무 조건 정리 · DB 모델·조회 계약<br>제한 함수·권한 · 백엔드·배치</dd></div><div><dt>기술</dt><dd>React · FastAPI<br>PostgreSQL · Cloudflare Access</dd></div></dl>
+</section>
+<div class="wrap"><div class="screen-meta"><span>실제 UI · 가상 데이터</span></div><div class="screenshot-hero"><img src="/assets/console-patients.jpg" alt="가상환자 A부터 L까지의 데이터로 실행한 실제 환자 대시보드" width="2160" height="1722" fetchpriority="high"></div></div>
+<div class="case-layout wrap">
+  <aside class="case-nav" aria-label="이 글의 목차"><span>목차</span><a href="#overview">제품과 담당 범위</a><a href="#dashboard">환자 대시보드</a><a href="#detail">환자 상세와 이력</a><a href="#devices">기기 대장</a><a href="#boundary">화면 뒤의 데이터 계약</a><button class="print-button" data-print type="button">이 페이지 인쇄 / PDF ↗</button></aside>
+  <div>
+    <section class="case-section" id="overview"><span class="kicker">01</span><h2>제품과 담당 범위</h2><p>콘솔은 환자 상태를 확인하고 수면·처방·기기 이력을 살펴보는 협업 제품입니다. 저는 주로 그 화면에 필요한 데이터 구조와 조회·변경 계약을 담당했습니다.</p><div class="role-split"><div><h3>제 기여</h3><p>업무 의미와 상태 정의, PostgreSQL 모델·View·제한 함수, 업체·운영자 권한 경계, 백엔드·배치 처리와 상대 저장소 계약 검증.</p></div><div class="collab"><h3>협업 제품</h3><p>화면 구성과 프런트엔드 구현은 협업 결과입니다. 제품의 화면과 제가 담당한 데이터 모델·조회·변경 계약을 연결해 소개합니다.</p></div></div><div class="note"><strong>화면 자료에 대해</strong><br>실제 콘솔 프런트엔드를 로컬에서 실행하고 모든 API 응답을 가상 데이터로 대체해 촬영했습니다. 이름·차트·기기번호는 데모 표기이며 운영 서버나 환자 데이터에 연결하지 않았습니다.</div></section>
+    <section class="case-section" id="dashboard"><span class="kicker">02</span><h2>환자 대시보드</h2><p>환자 목록에 처방 만료, 사용시간, AHI 관련 지표와 검색·필터를 모았습니다. 숫자를 표시하는 화면 뒤에서는 집계의 날짜 범위, 자료 부족과 실제 0의 구분, 환자 상태를 일관되게 전달해야 합니다.</p><figure class="screenshot"><button class="screenshot-button" type="button" data-zoom="/assets/console-patients.jpg" data-caption="환자 대시보드 · 실제 UI / 가상 데이터"><img src="/assets/console-patients.jpg" alt="케어 지표와 사용중 필터, AHI·사용시간 추이를 표시한 가상 환자 목록" width="2160" height="1722" loading="lazy"><span class="zoom-label">화면 크게 보기 ↗</span></button><figcaption><span class="caption-title">환자 대시보드.</span> 가상환자 데이터로 상태·필터·추이 표시를 확인한 화면입니다.</figcaption></figure><div class="screen-callouts"><div><span>01 · 집계 범위</span><h3>같은 범위의 집계</h3><p>상단 지표와 목록 필터가 같은 환자 범위와 조건을 가리키도록 조회 계약을 맞춥니다.</p></div><div><span>02 · 누락 데이터</span><h3>없음과 부족을 구분</h3><p>수집된 사용 0과 수집되지 않은 날짜를 같은 정상 수치로 해석하지 않도록 합니다.</p></div><div><span>03 · 이력</span><h3>날짜가 있는 추이</h3><p>단순 최신 N건과 연속 날짜 구간의 차이를 고려해 수면 기록을 전달합니다.</p></div></div></section>
+    <section class="case-section" id="detail"><span class="kicker">03</span><h2>환자 상세와 이력</h2><p>환자 상세는 수면 추이와 일별 기록, 처방 이력, 사용 기기를 연결합니다. 처방의 현재·과거·무효 상태를 구분하고, 기기 배정 이력을 현재 환자의 맥락에서 확인할 수 있게 합니다.</p><figure class="screenshot"><button class="screenshot-button" type="button" data-zoom="/assets/console-detail.jpg" data-caption="환자 상세 · 실제 UI / 가상 데이터"><img src="/assets/console-detail.jpg" alt="가상환자 B의 수면 추이·수면 기록·현재 및 과거 처방·사용 기기를 보여주는 상세 화면" width="2160" height="2399" loading="lazy"><span class="zoom-label">화면 크게 보기 ↗</span></button><figcaption><span class="caption-title">환자 상세.</span> 수면·처방·배정 이력의 데이터 연결을 실제 UI에서 보여줍니다.</figcaption></figure><h3>처방 상태의 구분</h3><p>현재 처방을 고를 수 없는 상태와 처방 이력이 아예 없는 상태는 다릅니다. DB의 판정 결과를 화면이 구분할 수 있도록 전달하는 것이 중요했습니다. 읽기 전용 이력과 실제 상태를 변경하는 업무도 별도 계약으로 다룹니다.</p></section>
+    <section class="case-section" id="devices"><span class="kicker">04</span><h2>기기 대장</h2><p>기기 대장은 개별 기기의 상태, 현재 사용자와 사용 시작일, 배정 이력과 케어 기록을 보여줍니다. 기기 한 대와 환자 한 명의 관계를 현재 행 하나로 덮어쓰지 않고 이력으로 관리하는 구조가 화면을 뒷받침합니다.</p><figure class="screenshot"><button class="screenshot-button" type="button" data-zoom="/assets/console-devices.jpg" data-caption="기기 대장 · 실제 UI / 가상 데이터"><img src="/assets/console-devices.jpg" alt="DEMO-DEVICE 식별자로 구성한 가상 기기 대장의 모델·상태·현재 사용자·배정 및 소독 정보" width="2160" height="1575" loading="lazy"><span class="zoom-label">화면 크게 보기 ↗</span></button><figcaption><span class="caption-title">기기 대장.</span> 모든 기기번호와 사용자 정보는 가상 데이터입니다.</figcaption></figure></section>
+    <section class="case-section" id="boundary"><span class="kicker">05</span><h2>화면 뒤의 데이터 계약</h2><p>웹 사용자의 인증과 DB 작업의 권한 판단을 같은 것으로 취급하지 않았습니다. 관리자 콘솔용 DB 역할을 분리하고, 합의된 변경은 운영자와 소속 업체를 확인하는 제한 함수를 통해 처리하도록 했습니다.</p><div class="diagram"><div class="diagram-label">인증과 DB 권한 확인 흐름</div><div class="relation-row"><div class="data-box"><div class="box-label">사용자 인증</div><strong>Cloudflare Access</strong><small>웹 사용자 확인</small></div><div class="relation-arrow">→</div><div class="data-box"><div class="box-label">서버 요청 문맥</div><strong>Operator · Vendor</strong><small>운영자·담당 업체 확인</small></div></div><div class="relation-label" style="margin:18px">↓ 허용된 작업만 요청</div><div class="data-box highlight"><div class="box-label">DB 변경 경계</div><strong>제한 함수 · 대상 검증 · 감사 기록</strong><small>허용 경로의 성공과 비허용 접근의 거부를 함께 확인</small></div></div><div class="table-scroll"><table class="comparison"><thead><tr><th>관심사</th><th>DB·백엔드에서 다룬 내용</th></tr></thead><tbody><tr><td>데이터 해석</td><td>환자·처방·수면·배정의 상태와 조회 필드 정의</td></tr><tr><td>접근 범위</td><td>실행용·변경용·콘솔용 DB 역할과 허용 인터페이스 구분</td></tr><tr><td>저장소 간 계약</td><td>컬럼·함수·권한 변경 시 소비자와 허용·거부 검사</td></tr><tr><td>운영 연결</td><td>Linux의 API 서비스와 수집 배치, 결과 확인·재처리 절차</td></tr></tbody></table></div><p>청구 기능의 관리자 웹 통합은 진행 중입니다. 이 페이지의 화면은 촬영한 UI 범위를 소개하며, 전체 청구 기능의 웹 통합이 끝났다는 의미는 아닙니다.</p></section>
+  </div>
+</div>
+<section class="next-project wrap"><a href="/projects/education-db/"><div><span>다음 프로젝트</span><h2>교육용 데이터베이스 설계</h2></div><span class="next-arrow" aria-hidden="true">↗</span></a></section>
+</main>
+  <footer class="site-footer">
+    <div class="wrap footer-top"><div><a class="footer-name" href="/">김지연<span>PostgreSQL DBA 포트폴리오</span></a></div><div class="footer-links"><a href="/about/">소개</a><a href="https://github.com/jiyeon98613" target="_blank" rel="noopener noreferrer">GitHub ↗</a></div></div>
+    <div class="wrap footer-bottom"><span>© 2026 Jiyeon Kim</span><span>PostgreSQL · Python · SQL</span><a class="back-top" href="#main">맨 위로 ↑</a></div>
+  </footer>
+  <dialog class="image-dialog" aria-label="화면 확대">
+    <div class="image-dialog-bar"><span id="image-caption">화면 크게 보기</span><button type="button" class="close-dialog" aria-label="확대 화면 닫기">닫기 <span aria-hidden="true">×</span></button></div>
+    <div class="image-dialog-scroll"><img alt="" src="data:," id="dialog-image"></div>
+  </dialog>
+</body>
+</html>

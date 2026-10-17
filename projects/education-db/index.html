@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#ffffff">
+  <title>교육용 데이터베이스 설계 · 김지연</title>
+  <meta name="description" content="공개 데이터의 구조를 관찰하고 15개 PostgreSQL 테이블을 설계·생성·검증한 기록.">
+  <link rel="canonical" href="https://jiyeon98613.github.io/projects/education-db/">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="ko_KR">
+  <meta property="og:title" content="교육용 데이터베이스 설계 · 김지연">
+  <meta property="og:description" content="공개 데이터의 구조를 관찰하고 15개 PostgreSQL 테이블을 설계·생성·검증한 기록.">
+  <meta property="og:url" content="https://jiyeon98613.github.io/projects/education-db/">
+  <meta property="og:image" content="https://jiyeon98613.github.io/assets/social-card.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preload" href="/assets/PretendardVariable.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/assets/site.css">
+  <script src="/assets/site.js" defer></script>
+</head>
+<body data-page="education">
+  <a class="skip" href="#main">본문으로 바로가기</a>
+  <header class="site-header">
+    <div class="nav wrap">
+      <a class="wordmark" href="/" aria-label="김지연 포트폴리오 첫 화면">김지연</a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav"><span>메뉴</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h16M4 16h16"/></svg></button>
+      <nav id="site-nav" aria-label="주요 메뉴">
+        <a href="/#work" data-nav="projects">프로젝트</a>
+        <a href="/about/" data-nav="about">소개</a>
+        <a href="https://github.com/jiyeon98613" target="_blank" rel="noopener noreferrer">GitHub <span aria-hidden="true">↗</span></a>
+        
+      </nav>
+    </div>
+  </header>
+  <main id="main"><section class="case-hero wrap"><div class="breadcrumb"><a href="/#work">프로젝트</a><span>/</span><span>교육용 데이터베이스 설계</span></div><h1>교육용 데이터베이스 설계</h1><p class="lead">공개 수학 데이터를 PostgreSQL 테이블 15개로 설계하고 스키마 생성을 확인했습니다.</p><dl class="case-meta"><div><dt>기간</dt><dd>2026.07 · 개인 프로젝트</dd></div><div><dt>완료 범위</dt><dd>데이터 구조 관찰 · 관계형 설계<br>DDL 생성 · PostgreSQL 카탈로그 확인</dd></div><div><dt>기술</dt><dd>PostgreSQL · SQL<br>ERD · 제약조건</dd></div></dl></section>
+<div class="case-layout wrap">
+  <aside class="case-nav" aria-label="이 글의 목차"><span>목차</span><a href="#overview">설계 범위</a><a href="#erd">최종 ERD</a><a href="#decisions">세 가지 설계 판단</a><a href="#verification">실행 검증과 한계</a><button class="print-button" data-print type="button">이 페이지 인쇄 / PDF ↗</button></aside>
+  <div>
+    <section class="case-section" id="overview"><span class="kicker">01</span><h2>설계 범위</h2><p>GSM8K와 AI Hub 수학 관련 데이터의 파일 구조를 살펴보고 문항, 풀이, 성취기준, 출처를 구분했습니다. 같은 의미로 보이는 값도 원본의 제공 단위와 실제 매핑 가능성을 확인한 뒤 관계로 옮겼습니다.</p><p>완료 범위는 관계형 설계와 스키마 생성·카탈로그 조회 검증입니다. 실제 데이터 인제스천과 전체 품질 검증은 이 프로젝트의 완료 성과에 포함하지 않습니다.</p></section>
+    <section class="case-section" id="erd"><span class="kicker">02</span><h2>최종 ERD</h2><p>원본 문항과 반복 가능한 구조, 풀이와 단계, 교육과정 성취기준과 데이터의 출처를 분리했습니다. 아래는 최종 설계의 테이블을 역할별로 정리한 요약 ERD입니다.</p>
+      <figure class="screenshot"><button class="screenshot-button" type="button" data-zoom="/assets/education-erd.svg" data-caption="교육용 데이터베이스 ERD · 15개 테이블 / 20개 FK"><img src="/assets/education-erd.svg" alt="문항·풀이·단계·성취기준·출처·적재 실행을 연결한 15개 테이블 ERD" width="1600" height="1325" loading="lazy"><span class="zoom-label">전체 ERD 크게 보기 ↗</span></button><figcaption>실제 설계의 15개 테이블과 20개 외래키를 정리한 도해입니다. 아래에서는 역할별로 다시 나누어 설명합니다.</figcaption></figure><div class="diagram"><div class="diagram-label">테이블의 역할별 분류</div><div class="erd-groups">
+        <div class="erd-group"><h4>출처·적재 실행</h4><ul><li>REFERENCE_SOURCE_TYPE</li><li>REFERENCE</li><li>LOAD_BATCH</li></ul></div>
+        <div class="erd-group main"><h4>문항·평가</h4><ul><li>PROBLEM_TEMPLATE</li><li>PROBLEM_INSTANCE</li><li>DIFFICULTY_ASSESSMENT</li></ul></div>
+        <div class="erd-group"><h4>풀이·단계</h4><ul><li>SOLUTION</li><li>SOLUTION_STEP</li><li>SOLUTION_STEP_MAP</li></ul></div>
+        <div class="erd-group"><h4>교육과정 성취기준</h4><ul><li>ACHIEVEMENT_STANDARD</li><li>TEMPLATE_STANDARD</li><li>STANDARD_MAP</li><li>STEP_STANDARD</li></ul></div>
+        <div class="erd-group"><h4>개념·단계 연결</h4><ul><li>CORE_CONCEPT</li><li>STEP_CONCEPT</li></ul></div>
+        <div class="erd-group"><h4>기본 키와 중복 기준</h4><ul><li>일반 엔터티 → 대리키</li><li>교차 테이블 → 복합키</li><li>원본 식별자 → UNIQUE</li></ul></div>
+      </div><div class="erd-relationships"><b>Template</b><span>1 → N</span><b>Instance</b><span> · </span><b>Template</b><span>1 → N</span><b>Solution</b><span> → </span><b>Step map</b></div><p class="diagram-caption">복잡한 교차 관계와 공통 적재 실행 FK는 요약 도해에서 생략했습니다. 설계 검증 기준은 테이블 15개, FK 20개입니다.</p></div>
+      <h3>핵심 관계</h3><div class="table-scroll"><table class="comparison"><thead><tr><th>관계</th><th>이유</th></tr></thead><tbody><tr><td>Template → Instance</td><td>같은 구조의 문항과 구체적인 숫자·정답을 가진 원본 문항을 분리</td></tr><tr><td>Template → Solution → Step map</td><td>문항별 풀이와 단계 순서를 표현하고 단계 연결을 별도로 관리</td></tr><tr><td>Template ↔ Standard</td><td>실제 원본이 제공하는 문항 수준의 성취기준 매핑을 반영</td></tr><tr><td>Instance → Reference</td><td>어느 출처의 어느 원본 문항인지 추적하고 중복 기준으로 활용</td></tr></tbody></table></div>
+    </section>
+    <section class="case-section" id="decisions"><span class="kicker">03</span><h2>세 가지 설계 판단</h2><h3>1. 출처와 원본 문항의 식별자를 구분</h3><p>데이터셋의 출처와 그 출처 안의 문항 번호는 다른 층위입니다. UUID만 매번 생성하면 같은 원본의 재유입을 구분할 수 없어, 출처와 원본 식별자를 묶은 유일성 제약을 설계했습니다.</p><pre class="code-block"><code>UNIQUE (reference_id, source_data_name)</code></pre><h3>2. 원본이 주는 수준으로 성취기준을 연결</h3><p>튜터링 관점에서는 풀이 단계별 성취기준이 유용하지만, 원본 데이터는 문항 수준으로 제공했습니다. 지금 채울 수 있는 문항 매핑과 추후 단계 매핑을 구분하고, 확장용 테이블은 그 상태를 명시했습니다.</p><h3>3. 난이도를 고정 속성 대신 평가로 표현</h3><p>한 출처에서 ‘상’인 문항이 다른 평가자에게도 같은 난이도인 것은 아닙니다. 문항의 단일 컬럼으로 고정하지 않고 평가자·방법·시각을 가진 별도 평가 테이블로 분리했습니다.</p><div class="note"><strong>판단 기준</strong><br>원본에서 관찰한 사실, 서비스가 요구하는 관계, 아직 데이터가 없는 확장 지점을 구분해 설계했습니다.</div></section>
+    <section class="case-section" id="verification"><span class="kicker">04</span><h2>실행 검증과 한계</h2><p>DDL을 PostgreSQL에서 실행하고 시스템 카탈로그를 조회해 ERD와 실제 테이블·제약조건이 대응하는지 확인했습니다. 아래 수치는 당시 설계 검증 기록입니다.</p><div class="table-scroll"><table class="comparison"><thead><tr><th>검사 항목</th><th>확인 결과</th><th>의미</th></tr></thead><tbody><tr><td>테이블</td><td>15개</td><td>설계 엔터티와 생성된 테이블의 대응 확인</td></tr><tr><td>PRIMARY KEY</td><td>15개</td><td>테이블별 기본 키 확인</td></tr><tr><td>FOREIGN KEY</td><td>20개</td><td>설계한 참조 관계의 생성 확인</td></tr><tr><td>UNIQUE / CHECK</td><td>3개 / 9개</td><td>중복 기준과 도메인 제약의 생성 확인</td></tr><tr><td>PK 구조</td><td>교차 5개 복합키 / 일반 10개 단일키</td><td>설계 원칙의 실제 적용 확인</td></tr></tbody></table></div><div class="note subtle"><strong>검증의 범위</strong><br>스키마 생성과 제약조건의 존재를 확인했습니다. 실제 데이터 적재, 오류 입력의 거부 테스트, 조회 성능 개선은 별도 검증이 필요한 범위로 남겨 두었습니다.</div><p>설계 근거는 원본의 식별 기준, 제공되는 성취기준 매핑 단위, 난이도 평가 주체를 기준으로 정리했습니다.</p></section>
+  </div>
+</div>
+<section class="next-project wrap"><a href="/about/"><div><span>소개</span><h2>경력과 담당 범위</h2></div><span class="next-arrow" aria-hidden="true">↗</span></a></section>
+</main>
+  <footer class="site-footer">
+    <div class="wrap footer-top"><div><a class="footer-name" href="/">김지연<span>PostgreSQL DBA 포트폴리오</span></a></div><div class="footer-links"><a href="/about/">소개</a><a href="https://github.com/jiyeon98613" target="_blank" rel="noopener noreferrer">GitHub ↗</a></div></div>
+    <div class="wrap footer-bottom"><span>© 2026 Jiyeon Kim</span><span>PostgreSQL · Python · SQL</span><a class="back-top" href="#main">맨 위로 ↑</a></div>
+  </footer>
+  <dialog class="image-dialog" aria-label="화면 확대">
+    <div class="image-dialog-bar"><span id="image-caption">화면 크게 보기</span><button type="button" class="close-dialog" aria-label="확대 화면 닫기">닫기 <span aria-hidden="true">×</span></button></div>
+    <div class="image-dialog-scroll"><img alt="" src="data:," id="dialog-image"></div>
+  </dialog>
+</body>
+</html>

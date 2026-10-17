@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#ffffff">
+  <title>소개 · 김지연</title>
+  <meta name="description" content="업무의 문제에서 출발해 데이터의 정합성과 안전한 운영을 공부하는 PostgreSQL DBA 지원자 김지연.">
+  <link rel="canonical" href="https://jiyeon98613.github.io/about/">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="ko_KR">
+  <meta property="og:title" content="소개 · 김지연">
+  <meta property="og:description" content="업무의 문제에서 출발해 데이터의 정합성과 안전한 운영을 공부하는 PostgreSQL DBA 지원자 김지연.">
+  <meta property="og:url" content="https://jiyeon98613.github.io/about/">
+  <meta property="og:image" content="https://jiyeon98613.github.io/assets/social-card.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preload" href="/assets/PretendardVariable.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/assets/site.css">
+  <script src="/assets/site.js" defer></script>
+</head>
+<body data-page="about">
+  <a class="skip" href="#main">본문으로 바로가기</a>
+  <header class="site-header">
+    <div class="nav wrap">
+      <a class="wordmark" href="/" aria-label="김지연 포트폴리오 첫 화면">김지연</a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav"><span>메뉴</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h16M4 16h16"/></svg></button>
+      <nav id="site-nav" aria-label="주요 메뉴">
+        <a href="/#work" data-nav="projects">프로젝트</a>
+        <a href="/about/" data-nav="about">소개</a>
+        <a href="https://github.com/jiyeon98613" target="_blank" rel="noopener noreferrer">GitHub <span aria-hidden="true">↗</span></a>
+        
+      </nav>
+    </div>
+  </header>
+  <main id="main"><section class="about-head wrap"><div><h1>김지연</h1><p>안녕하세요, PostgreSQL DBA를 준비하는 김지연입니다. 건강보험 청구 업무에서 만난 반복과 예외를 데이터 구조와 자동화로 풀어 왔습니다.</p><div class="tag-row"><span class="tag">PostgreSQL</span><span class="tag">Python · SQL</span><span class="tag">Linux</span><span class="tag">SQLD</span></div></div></section>
+<section class="about-section wrap"><h2>경력</h2>
+  <div class="career-row"><time>2026.06–현재</time><div><h3>청구·고객관리 시스템 고도화</h3><p>프리랜서 · 2인 프로젝트. DB·백엔드·배치 운영을 담당하고 있습니다. 7월 PostgreSQL로 전환했으며, 현재 청구 기능을 관리자 웹의 업무 흐름으로 통합하고 있습니다. 프로젝트는 2026년 12월 종료 예정입니다.</p></div></div>
+  <div class="career-row"><time>2026.01–05</time><div><h3>청구 업무와 자동화 MVP 개발</h3><p>맑은성모 청각센터에서 건강보험 양압기 청구 업무를 담당했습니다. 청구 규칙과 예외를 정리하고 SQLite 기반 MVP와 Playwright 자동화를 개발했습니다. PostgreSQL 전환 이전 단계의 경험입니다.</p></div></div>
+  <div class="career-row"><time>2024.08–2025.01</time><div><h3>수학·화학 1:1 강의</h3><p>미국 LA의 Highpoint Educational Institute에서 영어로 수업했습니다. 상대가 이해할 수 있는 설명과 단계별 문제 해결을 연습한 경험입니다.</p></div></div>
+</section>
+<section class="about-section wrap"><h2>기술</h2><dl class="stack-list">
+  <div><dt>PostgreSQL · SQL · Alembic</dt><dd>관계형 모델링, 업무 제약조건, 스키마 변경 이력, 역할별 접근 경계와 카탈로그 확인.</dd></div>
+  <div><dt>Python · FastAPI · SQLAlchemy</dt><dd>업무 처리 API, 데이터 적재·검증, DB 연결과 트랜잭션, 배치·관리 도구.</dd></div>
+  <div><dt>Linux · systemd</dt><dd>API 서비스와 일일 수집 배치 실행, 실행 결과 확인, 누락·실패 항목 재처리 절차.</dd></div>
+  <div><dt>Playwright · OCR · 문서 처리</dt><dd>브라우저 업무 자동화, 로컬 판독, 마스킹과 외부 추출의 역할 분리, 결과 검토.</dd></div>
+  <div><dt>권한·접근 통제</dt><dd>DB 역할 구분과 제한 함수, Cloudflare Access의 웹 사용자 인증, Tailscale 원격 접속.</dd></div>
+  <div><dt>Git · Forgejo · Woodpecker</dt><dd>변경 관리, 자동 테스트·저장소 간 계약 확인, 실행 결과 알림과 운영 문서화.</dd></div>
+</dl></section>
+<section class="about-section wrap"><h2>담당 범위와 협업</h2><div class="about-prose"><p>NHIS 프로젝트에서는 청구 업무의 요구사항과 예외를 정리하고 DB 영역을 주로 담당했습니다. SQL과 Python 구현에는 AI 코딩 도구를 적극 활용했습니다. 제가 결정한 조건과 실제 확인한 결과를 중심으로 작업을 설명합니다.</p><p>관리자 콘솔은 협업 결과물입니다. 화면을 함께 검토하고, 제가 맡은 데이터 모델·조회·변경 계약을 프런트엔드와 조율했습니다.</p><p>데이터가 정확하게 저장되는 것에 더해, 문제가 생겼을 때 원인과 처리 근거를 확인하고 복구할 수 있는 운영을 배우고자 합니다.</p></div></section>
+<section class="about-section wrap"><h2>학력·자격</h2><div class="career-row"><time>2021.08–2024.12 수학</time><div><h3>University of Southern California</h3><p>Computer Science (Games) 학사과정 수학. 졸업요건 2학점(1과목)이 남아 있습니다. 자료구조·알고리즘·컴퓨터 시스템·소프트웨어 개발 원리·이산수학을 수강했습니다.</p></div></div><div class="career-row"><time>2026.06</time><div><h3>SQL 개발자 · SQLD</h3><p>데이터 모델링과 SQL의 기초를 학습하고 자격을 취득했습니다.</p></div></div><div class="career-row"><time>Team projects</time><div><h3>게임 프로젝트의 완성과 공개</h3><p>Dandelion Wine에서는 20명 이상이 참여한 1년 과정 프로젝트의 카메라 시스템을 담당했습니다. Beyond the Veil은 2인 개발로 Windows·macOS용 게임을 완성해 공개했습니다.</p><a class="text-link" style="margin-top:14px" href="https://christiantrinhtran.itch.io/beyond-the-veil-a-kitty-cat-mystery-adventure" target="_blank" rel="noopener noreferrer">게임 공개 페이지 <span aria-hidden="true">↗</span></a></div></div></section>
+<section class="about-section wrap"><h2>GitHub</h2><div class="about-actions"><a class="button secondary" href="https://github.com/jiyeon98613" target="_blank" rel="noopener noreferrer">GitHub <span aria-hidden="true">↗</span></a></div></section>
+</main>
+  <footer class="site-footer">
+    <div class="wrap footer-top"><div><a class="footer-name" href="/">김지연<span>PostgreSQL DBA 포트폴리오</span></a></div><div class="footer-links"><a href="/about/">소개</a><a href="https://github.com/jiyeon98613" target="_blank" rel="noopener noreferrer">GitHub ↗</a></div></div>
+    <div class="wrap footer-bottom"><span>© 2026 Jiyeon Kim</span><span>PostgreSQL · Python · SQL</span><a class="back-top" href="#main">맨 위로 ↑</a></div>
+  </footer>
+  <dialog class="image-dialog" aria-label="화면 확대">
+    <div class="image-dialog-bar"><span id="image-caption">화면 크게 보기</span><button type="button" class="close-dialog" aria-label="확대 화면 닫기">닫기 <span aria-hidden="true">×</span></button></div>
+    <div class="image-dialog-scroll"><img alt="" src="data:," id="dialog-image"></div>
+  </dialog>
+</body>
+</html>

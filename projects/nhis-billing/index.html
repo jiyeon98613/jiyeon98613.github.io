@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#ffffff">
+  <title>건강보험 청구 시스템 · 김지연</title>
+  <meta name="description" content="문서의 유효성과 대체 관계, 월별 관리와 기간별 청구, 개인정보 마스킹을 설계한 과정.">
+  <link rel="canonical" href="https://jiyeon98613.github.io/projects/nhis-billing/">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="ko_KR">
+  <meta property="og:title" content="건강보험 청구 시스템 · 김지연">
+  <meta property="og:description" content="문서의 유효성과 대체 관계, 월별 관리와 기간별 청구, 개인정보 마스킹을 설계한 과정.">
+  <meta property="og:url" content="https://jiyeon98613.github.io/projects/nhis-billing/">
+  <meta property="og:image" content="https://jiyeon98613.github.io/assets/social-card.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preload" href="/assets/PretendardVariable.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/assets/site.css">
+  <script src="/assets/site.js" defer></script>
+</head>
+<body data-page="billing">
+  <a class="skip" href="#main">본문으로 바로가기</a>
+  <header class="site-header">
+    <div class="nav wrap">
+      <a class="wordmark" href="/" aria-label="김지연 포트폴리오 첫 화면">김지연</a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav"><span>메뉴</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h16M4 16h16"/></svg></button>
+      <nav id="site-nav" aria-label="주요 메뉴">
+        <a href="/#work" data-nav="projects">프로젝트</a>
+        <a href="/about/" data-nav="about">소개</a>
+        <a href="https://github.com/jiyeon98613" target="_blank" rel="noopener noreferrer">GitHub <span aria-hidden="true">↗</span></a>
+        
+      </nav>
+    </div>
+  </header>
+  <main id="main"><section class="case-hero wrap">
+  <div class="breadcrumb"><a href="/#work">프로젝트</a><span>/</span><span>건강보험 청구 시스템</span></div>
+  <h1>건강보험 청구 시스템</h1>
+  <p class="lead">처방전의 상태 관리, 월별 청구 데이터 모델, OCR 처리 방식을 정리했습니다.</p>
+  <dl class="case-meta"><div><dt>기간</dt><dd>2026.01–05 MVP<br>2026.06–현재 고도화</dd></div><div><dt>담당</dt><dd>업무 요구사항 정리 · DB 설계<br>백엔드·OCR 처리 흐름 · 배치 운영</dd></div><div><dt>기술</dt><dd>PostgreSQL · Python<br>SQLAlchemy · Alembic · FastAPI</dd></div></dl>
+</section>
+<div class="case-layout wrap">
+  <aside class="case-nav" aria-label="이 글의 목차"><span>목차</span><a href="#context">업무에서 출발한 문제</a><a href="#documents">문서의 유효성과 대체</a><a href="#model">월별 관리와 구간별 청구</a><a href="#ocr">OCR 접근을 바꾼 과정</a><a href="#contribution">기여와 검토 범위</a><button class="print-button" data-print type="button">이 페이지 인쇄 / PDF ↗</button></aside>
+  <div>
+    <section class="case-section" id="context"><span class="kicker">01</span><h2>업무에서 출발한 문제</h2><p>건강보험 양압기 청구 업무를 맡으며 환자 명단, 처방전, 수면보고서, 기기 배정과 여행 기록을 대조했습니다. 반복 입력을 줄이기 위한 MVP에서 출발했지만, 자동화를 이어 가려면 먼저 자료의 의미와 예외를 구분해야 했습니다.</p><p>2026년 1–5월에는 SQLite 기반 MVP를 개발했고, 이후 2인 프로젝트로 고도화하며 7월 PostgreSQL로 전환했습니다. 현재는 기존 청구 기능을 관리자 웹의 업무 흐름으로 통합하고 있습니다.</p><div class="note"><strong>이 페이지의 범위</strong><br>전체 시스템을 나열하기보다 문서 상태, 청구 근거, OCR의 역할 분리에 관한 설계 판단을 소개합니다. 도해의 식별자·날짜는 설명용 가상 예시입니다.</div></section>
+
+    <section class="case-section" id="documents"><span class="kicker">02</span><h2>문서의 유효성과 대체</h2><p>처방전이 새로 들어왔을 때 이전 자료를 모두 삭제하거나 무효로 만들면, 이미 처리한 청구가 무엇을 근거로 했는지 잃을 수 있습니다. 문서 자체의 유효성과 업무상 대체 관계를 별도로 표현했습니다.</p>
+      <div class="tabs" role="tablist" aria-label="처방전 처리 사례">
+        <button id="tab-replaced" type="button" role="tab" aria-selected="true" aria-controls="panel-replaced" data-document-tab>새 처방으로 대체</button>
+        <button id="tab-error" type="button" role="tab" aria-selected="false" aria-controls="panel-error" data-document-tab>추출값 오류</button>
+        <button id="tab-duplicate" type="button" role="tab" aria-selected="false" aria-controls="panel-duplicate" data-document-tab>중복 업로드</button>
+      </div>
+      <div id="panel-replaced" class="tab-panel" role="tabpanel" aria-labelledby="tab-replaced"><h3>새 처방으로 대체</h3><p>새로운 처방전과 대체 관계를 연결하고, 과거 청구의 처방전 참조와 첨부 근거를 보존합니다. 새 처방의 등장만으로 기존 청구의 자료를 자동 교체하지 않습니다.</p><div class="status-line"><span>문서 유효성: 유지</span><span>대체 관계: 기록</span><span class="keep">과거 청구 연결: 보존</span></div></div>
+      <div id="panel-error" class="tab-panel" role="tabpanel" aria-labelledby="tab-error" hidden><h3>추출값 오류</h3><p>원본은 맞지만 OCR의 날짜나 체크박스 값이 틀릴 수 있습니다. 추출값과 검증 결과를 수정·검토 대상으로 남기고, 다시 확인한 뒤 업무에 사용합니다.</p><div class="status-line"><span>추출값: 검토·수정</span><span>원본: 보존</span><span class="keep">청구 전: 정합성 재검사</span></div></div>
+      <div id="panel-duplicate" class="tab-panel" role="tabpanel" aria-labelledby="tab-duplicate" hidden><h3>중복 업로드</h3><p>동일 자료의 재유입은 새 임상 정보의 등록과 구분합니다. 중복 판정 근거를 남기고, 기존 처방전과 청구 참조가 중복 생성되지 않도록 합니다.</p><div class="status-line"><span>중복 여부: 비교</span><span>새 등록: 차단</span><span class="keep">기존 자료: 유지</span></div></div>
+      <div class="diagram"><div class="diagram-label">처방전과 청구의 관계</div><div class="relation-row"><div class="data-box"><div class="box-label">이전 처방전</div><strong>Prescription A</strong><small>유효한 문서 · 대체됨</small></div><div class="relation-arrow">→<small>대체 관계</small></div><div class="data-box highlight"><div class="box-label">새 처방전</div><strong>Prescription B</strong><small>유효한 문서 · 현재 기준</small></div></div><div class="relation-label" style="margin:17px 0">↑ 기존 연결을 보존</div><div class="data-box" style="max-width:320px"><div class="box-label">이미 처리한 청구</div><strong>Claim.ps_id → A</strong><small>ClaimDoc의 처방전 근거도 유지</small></div><p class="diagram-caption">현재 문서가 바뀌는 일과, 과거 청구의 근거를 변경하는 일을 분리했습니다.</p></div>
+      <div class="table-scroll"><table class="comparison"><thead><tr><th>들어온 자료의 상황</th><th>구분한 판단</th><th>남겨야 할 것</th></tr></thead><tbody><tr><td>완전 중복 자료</td><td>새 임상 정보인가, 같은 자료의 재유입인가</td><td>중복 판정과 기존 자료의 식별 근거</td></tr><tr><td>다른 환자·잘못된 파일</td><td>업무에 사용할 수 있는 문서인가</td><td>무효 판단의 사유와 변경 기록</td></tr><tr><td>추출값 오류</td><td>원본 오류인가, 추출 결과 오류인가</td><td>검토 대상·수정 내용·재검증 결과</td></tr><tr><td>새 처방으로 대체</td><td>과거의 유효성과 현재성을 구분</td><td>대체 관계와 과거 청구 참조</td></tr></tbody></table></div>
+    </section>
+
+    <section class="case-section" id="model"><span class="kicker">03</span><h2>월별 관리와 구간별 청구</h2><p>한 달 안에 처방 변경과 해외 체류가 겹치면 적용 기간과 요율이 달라집니다. 환자별 월 전체를 관리하는 <code>BillingCycle</code>과 기간별 청구를 기록하는 <code>Claim</code>을 1:N 관계로 분리했습니다.</p>
+      <div class="timeline-demo"><div class="demo-toolbar"><label><input type="checkbox" id="travel-toggle" checked>여행 기록 포함</label><span class="demo-result">같은 월 · Claim <b id="claim-count">3</b>건</span></div><div class="time-axis"><span>10월 1일</span><span>10일 · 처방 변경</span><span>31일</span></div><div class="time-rail"><div class="time-segment"><b>Claim 01</b><span>01–09일<br>이전 처방</span></div><div class="time-segment after first"><b>Claim 02</b><span>10–18일<br>새 처방</span></div><div class="time-segment travel"><b>해외 체류</b><span>19–22일</span></div><div class="time-segment after last"><b>Claim 03</b><span>23–31일<br>새 처방</span></div></div><div class="timeline-key"><span>이전 처방 구간</span><span>새 처방 구간</span><span>날짜는 설명용 가상 예시</span></div><p id="timeline-explanation" aria-live="polite">처방 변경과 해외 체류를 함께 반영하면 세 개의 국내 청구 구간이 생깁니다. 여행 전후 구간은 같은 처방·SR 근거를 공유할 수 있습니다.</p></div>
+      <p>이 구조에서 여행은 국내 청구기간을 나누지만, 그 자체가 새로운 처방전이나 수면보고서를 뜻하지는 않습니다. 청구 구간의 분할과 첨부 문서의 선택을 서로 다른 책임으로 두었습니다.</p>
+      <figure class="screenshot"><button class="screenshot-button erd-button" type="button" data-zoom="/assets/nhis-billing-erd.svg" data-caption="건강보험 청구 시스템 ERD · 실제 PostgreSQL 모델의 주요 테이블"><img src="/assets/nhis-billing-erd.svg" alt="patient_monthly_billing_cycles와 claims의 1:N 관계 및 문서·처방전·월별 근거·청구별 첨부의 외래키 관계" width="1440" height="686" loading="lazy"><span class="zoom-label">ERD 크게 보기 ↗</span></button><figcaption>실제 PostgreSQL 모델에서 청구 관련 테이블 6개와 주요 컬럼을 발췌했습니다. 공통 감사·업체 컬럼, 월별 관리의 기존 claim_id_1~3 호환 필드와 일부 외래키 대상은 생략했습니다.</figcaption></figure>
+      <h3>계산 근거와 첨부 문서</h3><div class="two-col"><div class="decision"><span>월별 업무·계산 근거</span><h3>BillingCycleRecord</h3><p>그달 업무·계산에 사용한 근거를 모읍니다. 문서뿐 아니라 기기 배정이나 여행처럼 청구에 영향을 주는 기록도 연결합니다.</p></div><div class="decision"><span>청구별 첨부 문서</span><h3>ClaimDoc</h3><p>특정 청구 구간에서 요구하거나 첨부한 문서를 연결합니다. 어느 처방전과 수면보고서를 실제 근거로 선택했는지 추적합니다.</p></div></div><div class="note"><strong>설계에서 중요하게 본 점</strong><br>청구 결과의 금액뿐 아니라 “어느 기간에, 어떤 처방과 자료로 처리했는가”를 나중에도 확인할 수 있어야 했습니다.</div>
+    </section>
+
+    <section class="case-section" id="ocr"><span class="kicker">04</span><h2>OCR 접근을 바꾼 과정</h2><p>처방전 OCR은 첫 접근으로 해결되지 않았습니다. 좌표 기반 추출은 문서 배치 변화에 약했고, 로컬 시각언어모델에서는 작은 숫자와 체크박스 판독의 한계가 남았습니다.</p><div class="table-scroll"><table class="comparison"><thead><tr><th>시도한 방법</th><th>관찰한 문제</th><th>그다음 판단</th></tr></thead><tbody><tr><td>양식 좌표 기반 추출</td><td>배치가 달라지면 다른 칸을 읽고 보정 작업이 반복됨</td><td>고정 좌표 의존도를 줄이는 방법 실험</td></tr><tr><td>로컬 VLM</td><td>작은 숫자·체크박스를 안정적으로 읽지 못함</td><td>이미지·OCR 텍스트·필드 지침을 함께 제공</td></tr><tr><td>다중 입력·체크박스 확대</td><td>개선 시도 후에도 임상 필드의 오판독이 남음</td><td>신원정보와 처방 항목의 추출 역할 분리</td></tr><tr><td>로컬 신원 판독 + 마스킹 이미지 추출</td><td>외부 전송 범위와 결과 검토를 함께 관리해야 함</td><td>마스킹 실패 시 전송 차단, 결과는 사람 검토</td></tr></tbody></table></div>
+      <div class="diagram"><div class="diagram-label">OCR 처리 흐름</div><div class="flow-grid"><div class="flow-step"><span class="flow-no">01 · 로컬 판독</span><strong>신원정보 판독</strong><p>원본에서 환자 연결에 필요한 정보를 로컬로 읽습니다.</p></div><div class="flow-step gate"><span class="flow-no">02 · 마스킹</span><strong>기준 문구로 영역 마스킹</strong><p>가릴 영역을 정하고 결과를 확인합니다. 필수 기준을 찾지 못하면 외부 전송을 중단합니다.</p></div><div class="flow-step cloud"><span class="flow-no">03 · 외부 추출</span><strong>마스킹 이미지로 처방 추출</strong><p>원본 대신 승인된 마스킹 이미지에서 처방 항목을 추출합니다.</p></div><div class="flow-step"><span class="flow-no">04 · 검토</span><strong>수정·검토 후 업무에 반영</strong><p>모델의 응답을 제안값으로 다루고, 추출값과 검토 결과를 연결합니다.</p></div></div><p class="diagram-caption">개인정보 영역은 로컬에서 처리하고, 임상 필드 추출과 최종 판단의 책임을 나눈 처리 흐름입니다.</p></div>
+      <p>각 방법에서 발생한 오판독을 확인하고, 신원정보 판독·처방 항목 추출·결과 검토를 분리했습니다. 이 기록은 실험 중 관찰한 문제와 처리 방식의 변경을 다룹니다. 양식별 정확도는 별도로 측정하지 않았습니다.</p>
+    </section>
+
+    <section class="case-section" id="contribution"><span class="kicker">05</span><h2>기여와 검토 범위</h2><div class="role-split"><div><h3>제가 담당한 부분</h3><p>청구 업무의 요구사항과 예외 정리, DB 모델과 변경 요구 결정, 백엔드·배치 처리, OCR 실험 실행·결과 확인을 주로 담당했습니다.</p></div><div class="collab"><h3>협업과 AI 활용</h3><p>2인 프로젝트로 진행했으며 SQL·Python 구현에 AI 코딩 도구를 활용했습니다. 콘솔 UI는 협업 결과물이며, DB·API 계약과 제 담당 범위를 구분해 소개합니다.</p></div></div><h3>주요 작업</h3><ul class="check-list"><li>문서가 바뀌어도 과거 업무의 근거를 보존하는 관계 설계</li><li>실제 예외에서 출발한 월 단위·기간 단위 모델 분리</li><li>실패 원인에 따라 추출 방식과 검토 조건을 조정한 과정</li></ul><div class="note subtle">민감한 운영 원본과 환자 데이터는 공개하지 않습니다. 이 페이지는 비공개 구현과 업무 기록을 바탕으로 핵심 관계와 판단을 공개용으로 재구성했습니다.</div></section>
+  </div>
+</div>
+<section class="next-project wrap"><a href="/projects/admin-console/"><div><span>다음 프로젝트</span><h2>관리자 콘솔</h2></div><span class="next-arrow" aria-hidden="true">↗</span></a></section>
+</main>
+  <footer class="site-footer">
+    <div class="wrap footer-top"><div><a class="footer-name" href="/">김지연<span>PostgreSQL DBA 포트폴리오</span></a></div><div class="footer-links"><a href="/about/">소개</a><a href="https://github.com/jiyeon98613" target="_blank" rel="noopener noreferrer">GitHub ↗</a></div></div>
+    <div class="wrap footer-bottom"><span>© 2026 Jiyeon Kim</span><span>PostgreSQL · Python · SQL</span><a class="back-top" href="#main">맨 위로 ↑</a></div>
+  </footer>
+  <dialog class="image-dialog" aria-label="화면 확대">
+    <div class="image-dialog-bar"><span id="image-caption">화면 크게 보기</span><button type="button" class="close-dialog" aria-label="확대 화면 닫기">닫기 <span aria-hidden="true">×</span></button></div>
+    <div class="image-dialog-scroll"><img alt="" src="data:," id="dialog-image"></div>
+  </dialog>
+</body>
+</html>
