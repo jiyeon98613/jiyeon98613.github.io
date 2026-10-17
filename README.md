@@ -10,13 +10,14 @@
 - 건강보험 청구 시스템: 문서 유효성·대체, 월별 관리·기간별 청구, OCR의 역할 분리
 - 관리자 콘솔: 실제 UI에 가상 API 응답을 넣어 촬영한 화면과 담당 범위
 - 교육용 DB: 15개 테이블 설계, DDL 생성·카탈로그 확인 범위
-- 소개: 경력, 기술, 협업·AI 활용, 이력서 링크
+- 소개: 경력, 기술, 협업·AI 활용, GitHub 링크
 
 ## 로컬 실행
 
 Python 3.11 이상만 있으면 빌드할 수 있습니다. 런타임 외부 패키지와 데이터베이스가 필요하지 않습니다.
 
     python3 scripts/generate_erd.py
+    python3 scripts/generate_billing_erd.py
     python3 build.py
     python3 scripts/check_site.py
     python3 -m http.server 4173 --bind 127.0.0.1 --directory dist
@@ -48,7 +49,7 @@ Python 3.11 이상만 있으면 빌드할 수 있습니다. 런타임 외부 패
 
 ## 배포
 
-GitHub Pages의 GitHub Actions 소스를 사용합니다. main에 반영된 코드를 빌드·검사한 뒤 dist만 업로드합니다. 원본 콘텐츠와 과거 포트폴리오의 비공개 자료는 자동으로 공개되지 않습니다.
+main 브랜치에서 사이트 소스를 관리하고, 빌드·검사를 통과한 dist 내용만 gh-pages 브랜치에 반영합니다. GitHub Pages의 게시 소스는 gh-pages 브랜치의 루트입니다. 새 버전도 빌드와 검사를 마친 뒤 배포 브랜치를 갱신합니다. 과거 포트폴리오의 비공개 자료는 배포에 포함하지 않습니다.
 
 기존 이력서의 주요 /portfolio/ 문서 주소는 대응하는 새 프로젝트로 이동하도록 별칭을 제공합니다.
 

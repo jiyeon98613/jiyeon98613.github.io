@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#ffffff">
+  <title>{{TITLE}} · 김지연</title>
+  <meta name="description" content="{{DESCRIPTION}}">
+  <link rel="canonical" href="{{URL}}">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="ko_KR">
+  <meta property="og:title" content="{{TITLE}} · 김지연">
+  <meta property="og:description" content="{{DESCRIPTION}}">
+  <meta property="og:url" content="{{URL}}">
+  <meta property="og:image" content="https://jiyeon98613.github.io/assets/social-card.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preload" href="/assets/PretendardVariable.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/assets/site.css">
+  <script src="/assets/site.js" defer></script>
+</head>
+<body data-page="{{PAGE}}">
+  <a class="skip" href="#main">본문으로 바로가기</a>
+  <header class="site-header">
+    <div class="nav wrap">
+      <a class="wordmark" href="/" aria-label="김지연 포트폴리오 첫 화면">김지연</a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav"><span>메뉴</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h16M4 16h16"/></svg></button>
+      <nav id="site-nav" aria-label="주요 메뉴">
+        <a href="/#work" data-nav="projects">프로젝트</a>
+        <a href="/about/" data-nav="about">소개</a>
+        <a href="https://github.com/jiyeon98613" target="_blank" rel="noopener noreferrer">GitHub <span aria-hidden="true">↗</span></a>
+        
+      </nav>
+    </div>
+  </header>
+  <main id="main">{{BODY}}</main>
+  <footer class="site-footer">
+    <div class="wrap footer-top"><div><a class="footer-name" href="/">김지연<span>PostgreSQL DBA 포트폴리오</span></a></div><div class="footer-links"><a href="/about/">소개</a><a href="https://github.com/jiyeon98613" target="_blank" rel="noopener noreferrer">GitHub ↗</a></div></div>
+    <div class="wrap footer-bottom"><span>© {{YEAR}} Jiyeon Kim</span><span>PostgreSQL · Python · SQL</span><a class="back-top" href="#main">맨 위로 ↑</a></div>
+  </footer>
+  <dialog class="image-dialog" aria-label="화면 확대">
+    <div class="image-dialog-bar"><span id="image-caption">화면 크게 보기</span><button type="button" class="close-dialog" aria-label="확대 화면 닫기">닫기 <span aria-hidden="true">×</span></button></div>
+    <div class="image-dialog-scroll"><img alt="" src="data:," id="dialog-image"></div>
+  </dialog>
+</body>
+</html>
