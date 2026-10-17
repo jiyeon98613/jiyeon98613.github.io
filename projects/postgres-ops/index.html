@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#ffffff">
+  <title>PostgreSQL 운영 실습 · 김지연</title>
+  <meta name="description" content="실제 백업 복구와 기존 인덱스 비교, 권한 분리, 스트리밍 복제·PITR·CloudNativePG 장애조치를 검증한 기록.">
+  <link rel="canonical" href="https://jiyeon98613.github.io/projects/postgres-ops/">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="ko_KR">
+  <meta property="og:title" content="PostgreSQL 운영 실습 · 김지연">
+  <meta property="og:description" content="실제 백업 복구와 기존 인덱스 비교, 권한 분리, 스트리밍 복제·PITR·CloudNativePG 장애조치를 검증한 기록.">
+  <meta property="og:url" content="https://jiyeon98613.github.io/projects/postgres-ops/">
+  <meta property="og:image" content="https://jiyeon98613.github.io/assets/social-card.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preload" href="/assets/PretendardVariable.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/assets/site.css">
+  <script src="/assets/site.js" defer></script>
+</head>
+<body data-page="ops">
+  <a class="skip" href="#main">본문으로 바로가기</a>
+  <header class="site-header">
+    <div class="nav wrap">
+      <a class="wordmark" href="/" aria-label="김지연 포트폴리오 첫 화면">김지연</a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav"><span>메뉴</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h16M4 16h16"/></svg></button>
+      <nav id="site-nav" aria-label="주요 메뉴">
+        <a href="/#work" data-nav="projects">프로젝트</a>
+        <a href="/about/" data-nav="about">소개</a>
+        <a href="https://github.com/jiyeon98613" target="_blank" rel="noopener noreferrer">GitHub <span aria-hidden="true">↗</span></a>
+
+      </nav>
+    </div>
+  </header>
+  <main id="main"><section class="case-hero wrap">
+  <div class="breadcrumb"><a href="/#work">프로젝트</a><span>/</span><span>PostgreSQL 운영 실습</span></div>
+  <h1>PostgreSQL 운영 실습</h1>
+  <p class="lead">청구 시스템의 실제 백업과 조회 SQL을 대상으로 복구 가능성과 기존 인덱스의 효과를 확인했습니다. 권한 분리, 스트리밍 복제, PITR과 자동 장애조치까지 실습했습니다.</p>
+  <dl class="case-meta"><div><dt>기간</dt><dd>2026.10 · 개인 프로젝트<br>검증일 2026.10.17</dd></div><div><dt>환경</dt><dd>PostgreSQL 18.6 · Linux<br>원본 백업의 비공개 복원본 · 로컬 Kubernetes</dd></div><div><dt>기술</dt><dd>Python · pgbench · pg_stat_statements<br>Podman · kind · CloudNativePG</dd></div></dl>
+  <p class="home-about"><a class="text-link" href="https://github.com/jiyeon98613/postgres-ops-lab" target="_blank" rel="noopener noreferrer">실습 코드와 결과 보기 ↗</a></p>
+</section>
+<div class="case-layout wrap">
+  <aside class="case-nav" aria-label="이 글의 목차"><span>목차</span><a href="#purpose">목적</a><a href="#commands">실행한 명령</a><a href="#results">결과</a><a href="#troubleshooting">막혔던 점</a><a href="#takeaways">배운 점</a><button class="print-button" data-print type="button">이 페이지 인쇄 / PDF ↗</button></aside>
+  <div>
+    <section class="case-section" id="purpose"><span class="kicker">01</span><h2>목적</h2>
+      <p>청구 시스템에 구축한 PostgreSQL 일일 백업을 대상으로 복구 가능성을 확인했습니다. 백업 파일을 새 인스턴스에 복원하고, 테이블과 행 값이 일치하는지 검증했습니다. 테이블을 삭제한 상황도 실습 DB에서 재현했습니다.</p>
+      <p>성능은 실제 문서 수집 과정에서 사용하는 이전 이력 조회 SQL로 비교했습니다. 기존 복합 인덱스 하나를 유지하거나 제거하면서 실행 시간, 실행계획과 버퍼 접근을 측정했습니다. 이어서 계정별 권한, replica 재시작 후 변경분 반영, 목표 시점 복구와 자동 장애조치를 확인했습니다.</p>
+      <div class="note"><strong>운영과 실습의 범위</strong><br>일일 백업은 운영 시스템에 설정했습니다. 복원본에서 수행한 인덱스 비교·권한 분리·복제·PITR은 격리된 실습이며, 이 과정에서 운영 DB의 인덱스·계정·설정은 변경하지 않았습니다. Kubernetes에는 장애조치 확인용 데이터만 사용했습니다.</div>
+    </section>
+    <section class="case-section" id="commands"><span class="kicker">02</span><h2>실행한 명령</h2>
+      <p>완료된 백업 파일과 Git 저장소 밖의 작업 디렉터리를 지정해 아래 스크립트를 실행했습니다. 각 스크립트는 별도 PostgreSQL 인스턴스를 사용하고, 검증이 끝나면 인스턴스를 종료했습니다. 원본 데이터와 접속 정보는 비공개 작업 디렉터리에 보관했습니다.</p>
+      <pre class="code-block"><code>python scripts/restore.py --dump "$BACKUP_FILE" \
+  --workspace "$LAB_WORKSPACE" --pg-bin /usr/lib/postgresql/18/bin
+python scripts/drop_restore.py \
+  --workspace "$LAB_WORKSPACE" --pg-bin /usr/lib/postgresql/18/bin
+python scripts/tuning.py --data-mode unmodified \
+  --workspace "$LAB_WORKSPACE" --pg-bin /usr/lib/postgresql/18/bin \
+  --clients 2 --transactions 100 --rounds 4
+python scripts/tuning.py --data-mode masked \
+  --workspace "$LAB_WORKSPACE" --pg-bin /usr/lib/postgresql/18/bin \
+  --clients 2 --transactions 100 --rounds 4
+python scripts/roles.py \
+  --workspace "$LAB_WORKSPACE" --pg-bin /usr/lib/postgresql/18/bin
+python scripts/physical.py \
+  --workspace "$LAB_WORKSPACE" --pg-bin /usr/lib/postgresql/18/bin</code></pre>
+      <p>권한 검사는 <code>masked</code> 모드에서 생성한 DB를 사용했습니다. <code>physical.py</code>는 실습 primary의 테이블을 삭제하므로 마지막에 실행했습니다. CloudNativePG는 별도의 로컬 kind 클러스터를 준비한 뒤 설치와 장애조치 검증을 실행했습니다.</p>
+      <pre class="code-block"><code>python scripts/cnpg.py install
+python scripts/cnpg.py failover</code></pre>
+      <p>환경 설정과 종료 명령을 포함한 전체 절차는 <a class="text-link" href="https://github.com/jiyeon98613/postgres-ops-lab#실행-환경과-순서" target="_blank" rel="noopener noreferrer">저장소의 실행 안내 ↗</a>에 정리했습니다.</p>
+    </section>
+    <section class="case-section" id="results"><span class="kicker">03</span><h2>결과</h2>
+      <div class="table-scroll"><table class="comparison"><thead><tr><th scope="col">실습</th><th scope="col">확인한 결과</th><th scope="col">상세 기록</th></tr></thead><tbody>
+        <tr><td>백업·삭제 복구</td><td>62개 테이블·32,117행이 백업과 일치했습니다. 수집 이력 테이블을 삭제한 뒤 새 DB에 복원해 전체 테이블을 다시 대조했습니다.</td><td><a class="text-link" href="https://github.com/jiyeon98613/postgres-ops-lab/tree/main/labs/01-backup-restore" target="_blank" rel="noopener noreferrer">백업·복구 README ↗</a></td></tr>
+        <tr><td>기존 인덱스 비교</td><td>실제 이력 2,692행·수집 묶음 27행으로 인덱스 유무를 비교했습니다. 원본 복원본과 마스킹 복제본에서 각각 4,800회 측정했습니다.</td><td><a class="text-link" href="https://github.com/jiyeon98613/postgres-ops-lab/tree/main/labs/02-query-tuning" target="_blank" rel="noopener noreferrer">SQL 비교 README ↗</a></td></tr>
+        <tr><td>계정별 권한</td><td>읽기 전용·애플리케이션·스키마 소유자를 나누고 실제 로그인과 허용·거부 검사 17개를 통과했습니다.</td><td><a class="text-link" href="https://github.com/jiyeon98613/postgres-ops-lab/tree/main/labs/03-roles" target="_blank" rel="noopener noreferrer">권한 README ↗</a></td></tr>
+        <tr><td>스트리밍 복제·PITR</td><td>replica 중단 중 추가한 1,000행이 재시작 후 반영됐습니다. 테이블 삭제 직전으로 복구해 목표 이전 행의 포함과 이후 행의 제외를 확인했습니다.</td><td><a class="text-link" href="https://github.com/jiyeon98613/postgres-ops-lab/tree/main/labs/04-replication-pitr" target="_blank" rel="noopener noreferrer">복제·PITR README ↗</a></td></tr>
+        <tr><td>자동 장애조치</td><td>primary Pod 삭제 후 4초에 새 primary 쓰기를 확인했습니다. 초기 데이터와 성공 응답을 받은 쓰기가 보존됐고, 이전 primary는 replica로 재합류했습니다.</td><td><a class="text-link" href="https://github.com/jiyeon98613/postgres-ops-lab/tree/main/labs/05-cloudnativepg" target="_blank" rel="noopener noreferrer">장애조치 README ↗</a></td></tr>
+      </tbody></table></div>
+      <p>62개 테이블에는 애플리케이션 테이블 61개와 Alembic 버전 관리 테이블 1개가 포함됩니다. 복원 검증은 백업과의 값 일치를 기준으로 했으며, 운영 계정의 소유권·권한과 외부 문서 파일 복구는 포함하지 않았습니다.</p>
+      <h3>조회 범위에 따른 인덱스 효과</h3>
+      <p>이전 이력 조회에서 사용하는 <code>(vendor_id, business_key, created_at)</code> 인덱스를 비교했습니다. 다음은 원본 값을 유지한 복원본의 결과입니다. 각 조건을 4라운드 측정하고 라운드별 평균 실행 시간의 중앙값을 비교했습니다.</p>
+      <div class="table-scroll"><table class="comparison"><thead><tr><th scope="col">파일 ID 수</th><th scope="col">반환 행 수</th><th scope="col">인덱스 없음</th><th scope="col">인덱스 있음</th><th scope="col">없음 ÷ 있음</th></tr></thead><tbody><tr><td>1개</td><td>5행</td><td>0.6173ms</td><td>0.1044ms</td><td>5.91배</td></tr><tr><td>10개</td><td>41행</td><td>1.1705ms</td><td>0.4749ms</td><td>2.46배</td></tr><tr><td>100개</td><td>247행</td><td>2.9587ms</td><td>2.3921ms</td><td>1.24배</td></tr></tbody></table></div>
+      <p>파일 ID 1개 조회는 <code>Seq Scan</code>에서 해당 인덱스의 <code>Index Scan</code>으로 바뀌었고, 대표 실행계획의 전체 shared buffer hit가 306회에서 9회로 줄었습니다. 물리 디스크 read는 양쪽 모두 0이었습니다. 100개 조회에서는 효과가 작아졌으며 두 조건 모두 별도 정렬이 남았습니다.</p>
+      <p>원본 데이터, 백업 파일, SQL 매개변수와 원본 로그는 공개하지 않았습니다. <a class="text-link" href="https://github.com/jiyeon98613/postgres-ops-lab/tree/main/results" target="_blank" rel="noopener noreferrer">공개 결과 파일 ↗</a>에는 검토한 집계 수치와 식별값을 제외한 실행계획을 남겼습니다.</p>
+    </section>
+    <section class="case-section" id="troubleshooting"><span class="kicker">04</span><h2>막혔던 점</h2>
+      <h3>기존 스키마와 실습용 이름의 충돌</h3><p>마스킹 복제본을 만드는 단계에서 <code>42P06</code> 오류가 발생했습니다. 백업에 이미 <code>masked</code> 스키마가 있었기 때문입니다. 실습용 이름을 <code>pgops_masked</code>로 바꾸고 기존 스키마가 있는 경우를 코드 검증에 추가했습니다.</p>
+      <h3>복구 일시 정지 상태의 조회 잠금</h3><p>일회용 데이터로 PITR을 검증할 때 목표 시점에서 일시 정지한 DB를 조회하다가 <code>55P03</code> 잠금 오류가 발생했습니다. 목표 도달 확인과 데이터 검증을 분리하고, 복구를 완료한 뒤 테이블을 조회하도록 순서를 바꿨습니다. 이후 코드 검증과 실제 백업 검증을 모두 통과했습니다.</p>
+      <h3>운영 통계로 확인하지 못한 SQL의 우선순위</h3><p>확인 당시 운영 DB에는 <code>pg_stat_statements</code>가 없었고 조회한 인덱스 사용 통계도 모두 0이었습니다. 실제 조회 조건과 기존 인덱스를 근거로 비교 대상을 선정했으며, 운영에서 가장 느리거나 가장 많이 쓰이는 SQL이라고 판단하지 않았습니다.</p>
+    </section>
+    <section class="case-section" id="takeaways"><span class="kicker">05</span><h2>배운 점</h2>
+      <p>복구 완료 기준에 명령의 성공 여부와 함께 실제 데이터 일치를 포함했습니다. PITR은 물리 백업 이후·목표 시점 이전에 쓴 행과 목표 이후의 행을 나눠 확인해야 원하는 시점까지 복구됐는지 판단할 수 있었습니다.</p>
+      <p>인덱스는 같은 SQL에서도 조회 범위에 따라 효과가 달랐습니다. 실행 시간의 비율과 함께 절대 차이, 반환 행 수와 실행계획을 확인했습니다. 파일 ID 1개 조회의 시간 차이는 약 0.513ms였으며, 이번 결과는 기존 인덱스의 효과를 복원 환경에서 확인한 수치입니다. 운영의 느린 SQL을 찾아 새 인덱스를 배포한 결과와는 구분했습니다.</p>
+      <p>자동 장애조치는 새 primary가 생긴 뒤 쓰기 서비스로 접속되는지, 성공 응답을 받은 데이터가 남아 있는지, 이전 primary가 다시 합류하는지까지 확인했습니다. 단일 호스트에서 수행한 실습이므로 물리 서버 장애와 네트워크 분단은 검증 범위에 포함하지 않았습니다.</p>
+      <div class="note"><strong>추가로 확인할 범위</strong><br>운영 DB 지표의 지속적인 모니터링, 실제 호출 빈도에 따른 SQL 우선순위, 인덱스 쓰기 비용은 별도 검증이 필요합니다. 운영 DB는 확인 당시 WAL 아카이브가 꺼져 있었으며, 이번 PITR 성공이 운영 PITR 구축 완료를 의미하지는 않습니다.</div>
+    </section>
+  </div>
+</div>
+<section class="next-project wrap"><a href="/projects/nhis-billing/"><div><span>프로젝트</span><h2>건강보험 청구 시스템</h2></div><span class="next-arrow" aria-hidden="true">↗</span></a></section>
+</main>
+  <footer class="site-footer">
+    <div class="wrap footer-top"><div><a class="footer-name" href="/">김지연<span>PostgreSQL DBA 포트폴리오</span></a></div><div class="footer-links"><a href="/about/">소개</a><a href="https://github.com/jiyeon98613" target="_blank" rel="noopener noreferrer">GitHub ↗</a></div></div>
+    <div class="wrap footer-bottom"><span>© 2026 Jiyeon Kim</span><span>PostgreSQL · Python · SQL</span><a class="back-top" href="#main">맨 위로 ↑</a></div>
+  </footer>
+  <dialog class="image-dialog" aria-label="화면 확대">
+    <div class="image-dialog-bar"><span id="image-caption">화면 크게 보기</span><button type="button" class="close-dialog" aria-label="확대 화면 닫기">닫기 <span aria-hidden="true">×</span></button></div>
+    <div class="image-dialog-scroll"><img alt="" src="data:," id="dialog-image"></div>
+  </dialog>
+</body>
+</html>
