@@ -36,7 +36,7 @@
   <div class="breadcrumb"><a href="/#work">프로젝트</a><span>/</span><span>건강보험 청구 시스템</span></div>
   <h1>건강보험 청구 시스템</h1>
   <p class="lead">처방전의 상태 관리, 월별 청구 데이터 모델, OCR 처리 방식을 정리했습니다.</p>
-  <dl class="case-meta"><div><dt>기간</dt><dd>2026.01–05 MVP<br>2026.06–현재 고도화</dd></div><div><dt>담당</dt><dd>업무 요구사항 정리 · DB 설계<br>백엔드·OCR 처리 흐름 · 배치 운영</dd></div><div><dt>기술</dt><dd>PostgreSQL · Python<br>SQLAlchemy · Alembic · FastAPI</dd></div></dl>
+  <dl class="case-meta"><div><dt>기간</dt><dd>2026.01–05 SQLite MVP<br>2026.06–현재 고도화</dd></div><div><dt>담당</dt><dd>업무 요구사항 정리 · DB 설계<br>백엔드·OCR 처리 흐름 · 배치 운영</dd></div><div><dt>기술</dt><dd>PostgreSQL · Python<br>SQLAlchemy · Alembic · FastAPI</dd></div></dl>
 </section>
 <div class="case-layout wrap">
   <aside class="case-nav" aria-label="이 글의 목차"><span>목차</span><a href="#context">업무에서 출발한 문제</a><a href="#documents">문서의 유효성과 대체</a><a href="#model">월별 관리와 구간별 청구</a><a href="#ocr">OCR 접근을 바꾼 과정</a><a href="#contribution">기여와 검토 범위</a><button class="print-button" data-print type="button">이 페이지 인쇄 / PDF ↗</button></aside>
@@ -54,6 +54,14 @@
       <div id="panel-duplicate" class="tab-panel" role="tabpanel" aria-labelledby="tab-duplicate" hidden><h3>중복 업로드</h3><p>동일 자료의 재유입은 새 임상 정보의 등록과 구분합니다. 중복 판정 근거를 남기고, 기존 처방전과 청구 참조가 중복 생성되지 않도록 합니다.</p><div class="status-line"><span>중복 여부: 비교</span><span>새 등록: 차단</span><span class="keep">기존 자료: 유지</span></div></div>
       <div class="diagram"><div class="diagram-label">처방전과 청구의 관계</div><div class="relation-row"><div class="data-box"><div class="box-label">이전 처방전</div><strong>Prescription A</strong><small>유효한 문서 · 대체됨</small></div><div class="relation-arrow">→<small>대체 관계</small></div><div class="data-box highlight"><div class="box-label">새 처방전</div><strong>Prescription B</strong><small>유효한 문서 · 현재 기준</small></div></div><div class="relation-label" style="margin:17px 0">↑ 기존 연결을 보존</div><div class="data-box" style="max-width:320px"><div class="box-label">이미 처리한 청구</div><strong>Claim.ps_id → A</strong><small>ClaimDoc의 처방전 근거도 유지</small></div><p class="diagram-caption">현재 문서가 바뀌는 일과, 과거 청구의 근거를 변경하는 일을 분리했습니다.</p></div>
       <div class="table-scroll"><table class="comparison"><thead><tr><th>들어온 자료의 상황</th><th>구분한 판단</th><th>남겨야 할 것</th></tr></thead><tbody><tr><td>완전 중복 자료</td><td>새 임상 정보인가, 같은 자료의 재유입인가</td><td>중복 판정과 기존 자료의 식별 근거</td></tr><tr><td>다른 환자·잘못된 파일</td><td>업무에 사용할 수 있는 문서인가</td><td>무효 판단의 사유와 변경 기록</td></tr><tr><td>추출값 오류</td><td>원본 오류인가, 추출 결과 오류인가</td><td>검토 대상·수정 내용·재검증 결과</td></tr><tr><td>새 처방으로 대체</td><td>과거의 유효성과 현재성을 구분</td><td>대체 관계와 과거 청구 참조</td></tr></tbody></table></div>
+      <h3 id="duplicate-incident">동일 기간 처방 중복을 정리한 사례</h3>
+      <p>엑셀과 OCR로 처방 정보를 모으는 과정에서 임시 관리자 CLI에 같은 환자의 동일 기간 처방이 두 건씩 나타났습니다. 기존 데이터의 정리와 이후 등록 경로의 보완을 나누어 진행했습니다.</p>
+      <div class="table-scroll"><table class="comparison" style="min-width:0"><thead><tr><th scope="col" style="width:76px">단계</th><th scope="col">조치와 확인한 결과</th></tr></thead><tbody>
+        <tr><th scope="row">발견·영향</th><td>CLI에서 두 처방이 모두 유효한 상태임을 확인했습니다. 시스템이 기준 처방을 하나로 선택하지 못해 후속 처리가 막혔습니다.</td></tr>
+        <tr><th scope="row">정리</th><td>잘못된 처방을 <code>is_valid=false</code>로 무효 처리하는 절차로 정리했습니다. 행과 이력을 남기면서 업무 근거에서 제외하는 방식입니다.</td></tr>
+        <tr><th scope="row">결과 확인</th><td>이후 CLI를 다시 확인했을 때 중복 관련 오류가 해소됐습니다. 남아 있던 처방 없음 항목은 실제 사용 중단 사례인지 확인했습니다.</td></tr>
+        <tr><th scope="row">후속 보완</th><td>무효 처방이 순응 이력 판정에 영향을 주는 동작을 보완했습니다. 엑셀의 가상 처방 생성 경로를 제거하고 검토된 OCR 등록 경로로 통합했으며, 이미 등록한 문서의 재처리는 추가 저장 없이 종료하도록 했습니다.</td></tr>
+      </tbody></table></div>
     </section>
 
     <section class="case-section" id="model"><span class="kicker">03</span><h2>월별 관리와 구간별 청구</h2><p>한 달 안에 처방 변경과 해외 체류가 겹치면 적용 기간과 요율이 달라집니다. 환자별 월 전체를 관리하는 <code>BillingCycle</code>과 기간별 청구를 기록하는 <code>Claim</code>을 1:N 관계로 분리했습니다.</p>
@@ -64,7 +72,8 @@
     </section>
 
     <section class="case-section" id="ocr"><span class="kicker">04</span><h2>OCR 접근을 바꾼 과정</h2><p>처방전 OCR은 첫 접근으로 해결되지 않았습니다. 좌표 기반 추출은 문서 배치 변화에 약했고, 로컬 시각언어모델에서는 작은 숫자와 체크박스 판독의 한계가 남았습니다.</p><div class="table-scroll"><table class="comparison"><thead><tr><th>시도한 방법</th><th>관찰한 문제</th><th>그다음 판단</th></tr></thead><tbody><tr><td>양식 좌표 기반 추출</td><td>배치가 달라지면 다른 칸을 읽고 보정 작업이 반복됨</td><td>고정 좌표 의존도를 줄이는 방법 실험</td></tr><tr><td>로컬 VLM</td><td>작은 숫자·체크박스를 안정적으로 읽지 못함</td><td>이미지·OCR 텍스트·필드 지침을 함께 제공</td></tr><tr><td>다중 입력·체크박스 확대</td><td>개선 시도 후에도 임상 필드의 오판독이 남음</td><td>신원정보와 처방 항목의 추출 역할 분리</td></tr><tr><td>로컬 신원 판독 + 마스킹 이미지 추출</td><td>외부 전송 범위와 결과 검토를 함께 관리해야 함</td><td>마스킹 실패 시 전송 차단, 결과는 사람 검토</td></tr></tbody></table></div>
-      <div class="diagram"><div class="diagram-label">OCR 처리 흐름</div><div class="flow-grid"><div class="flow-step"><span class="flow-no">01 · 로컬 판독</span><strong>신원정보 판독</strong><p>원본에서 환자 연결에 필요한 정보를 로컬로 읽습니다.</p></div><div class="flow-step gate"><span class="flow-no">02 · 마스킹</span><strong>기준 문구로 영역 마스킹</strong><p>가릴 영역을 정하고 결과를 확인합니다. 필수 기준을 찾지 못하면 외부 전송을 중단합니다.</p></div><div class="flow-step cloud"><span class="flow-no">03 · 외부 추출</span><strong>마스킹 이미지로 처방 추출</strong><p>원본 대신 승인된 마스킹 이미지에서 처방 항목을 추출합니다.</p></div><div class="flow-step"><span class="flow-no">04 · 검토</span><strong>수정·검토 후 업무에 반영</strong><p>모델의 응답을 제안값으로 다루고, 추출값과 검토 결과를 연결합니다.</p></div></div><p class="diagram-caption">개인정보 영역은 로컬에서 처리하고, 임상 필드 추출과 최종 판단의 책임을 나눈 처리 흐름입니다.</p></div>
+      <p>고객사의 외부 API 사용 검토와 동의를 거쳐 GPT API를 이용하고 있습니다. 이름·주민번호 등 개인정보 영역을 마스킹한 뒤 관리자가 결과를 확인하고, 식별정보가 제외된 이미지 영역만 전송해 처방 항목의 추출값을 받습니다.</p>
+      <div class="diagram"><div class="diagram-label">OCR 처리 흐름</div><div class="flow-grid"><div class="flow-step"><span class="flow-no">01 · 로컬 판독</span><strong>신원정보 판독</strong><p>원본에서 환자 연결에 필요한 정보를 로컬로 읽습니다.</p></div><div class="flow-step gate"><span class="flow-no">02 · 마스킹</span><strong>기준 문구로 영역 마스킹</strong><p>개인정보 영역을 마스킹하고 관리자가 결과를 검토합니다. 필수 기준을 찾지 못하면 외부 전송을 중단합니다.</p></div><div class="flow-step cloud"><span class="flow-no">03 · 외부 추출</span><strong>GPT API로 처방 항목 추출</strong><p>관리자가 확인한 마스킹 이미지의 식별정보 제외 영역을 전송하고 추출값을 받습니다.</p></div><div class="flow-step"><span class="flow-no">04 · 검토</span><strong>수정·검토 후 업무에 반영</strong><p>모델의 응답을 제안값으로 다루고, 추출값과 검토 결과를 연결합니다.</p></div></div><p class="diagram-caption">신원정보는 로컬에서 처리하고, GPT API의 추출값은 관리자가 검토한 뒤 업무에 반영합니다.</p></div>
       <p>각 방법에서 발생한 오판독을 확인하고, 신원정보 판독·처방 항목 추출·결과 검토를 분리했습니다. 이 기록은 실험 중 관찰한 문제와 처리 방식의 변경을 다룹니다. 양식별 정확도는 별도로 측정하지 않았습니다.</p>
     </section>
 
