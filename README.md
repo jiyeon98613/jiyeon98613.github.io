@@ -1,12 +1,13 @@
 # 김지연 · PostgreSQL DBA 포트폴리오
 
-건강보험 청구 시스템의 데이터 모델링·OCR 개선 과정, 관리자 콘솔의 실제 UI와 DB·백엔드 기여, 교육용 DB 설계 기록을 소개하는 정적 사이트입니다.
+건강보험 청구 시스템의 데이터 모델링·OCR 개선 과정, 관리자 콘솔의 실제 UI와 DB·백엔드 기여, 교육용 DB 설계와 PostgreSQL 운영 실습 기록을 소개하는 정적 사이트입니다.
 
-예정 주소: https://jiyeon98613.github.io/
+게시 주소: https://jiyeon98613.github.io/
 
 ## 구성
 
 - 홈: 소개와 대표 프로젝트
+- PostgreSQL 운영 실습: 실제 백업 복구, 기존 인덱스 비교, 권한 분리, 복제·PITR·CloudNativePG 장애조치
 - 건강보험 청구 시스템: 문서 유효성·대체, 월별 관리·기간별 청구, OCR의 역할 분리
 - 관리자 콘솔: 실제 UI에 가상 API 응답을 넣어 촬영한 화면과 담당 범위
 - 교육용 DB: 15개 테이블 설계, DDL 생성·카탈로그 확인 범위
@@ -29,6 +30,7 @@ Python 3.11 이상만 있으면 빌드할 수 있습니다. 런타임 외부 패
 | 경로 | 역할 |
 | --- | --- |
 | content/home.html | 첫 화면과 대표 프로젝트 |
+| content/ops.html | PostgreSQL 운영 실습과 결과·GitHub 기록 |
 | content/billing.html | 청구 시스템 설계 사례 |
 | content/console.html | 관리자 콘솔과 기여 범위 |
 | content/education.html | 교육용 데이터베이스 설계 |

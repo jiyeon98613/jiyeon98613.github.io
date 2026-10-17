@@ -9,6 +9,7 @@ OUT = ROOT / "dist"
 SITE_URL = "https://jiyeon98613.github.io"
 PAGES = [
     ("", "PostgreSQL DBA 포트폴리오", "건강보험 청구 시스템의 데이터 모델링, 정합성, OCR와 운영 경험을 정리한 김지연의 포트폴리오.", "home"),
+    ("projects/postgres-ops", "PostgreSQL 운영 실습", "실제 백업 복구와 기존 인덱스 비교, 권한 분리, 스트리밍 복제·PITR·CloudNativePG 장애조치를 검증한 기록.", "ops"),
     ("projects/nhis-billing", "건강보험 청구 시스템", "문서의 유효성과 대체 관계, 월별 관리와 기간별 청구, 개인정보 마스킹을 설계한 과정.", "billing"),
     ("projects/admin-console", "관리자 콘솔", "실제 관리자 콘솔 UI와 가상 데이터로 살펴보는 환자·처방·기기 관리, 그리고 DB·백엔드 기여.", "console"),
     ("projects/education-db", "교육용 데이터베이스 설계", "공개 데이터의 구조를 관찰하고 15개 PostgreSQL 테이블을 설계·생성·검증한 기록.", "education"),

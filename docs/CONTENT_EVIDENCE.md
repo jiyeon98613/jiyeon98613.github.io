@@ -19,4 +19,18 @@
 
 기능 상태와 수치가 바뀌면 해당 기준일·설명·화면을 함께 검토합니다. 과거 스냅샷과 현재 구조를 같은 기준으로 표시하지 않습니다. 생성한 도해는 전체 운영 스키마가 아니라 설명에 필요한 관계의 요약입니다.
 
-운영 실습 저장소와 관련 실습 내용은 사용자의 요청에 따라 이 사이트 범위에서 제외했습니다.
+## PostgreSQL 운영 실습
+
+공개 근거는 [postgres-ops-lab](https://github.com/jiyeon98613/postgres-ops-lab)의 실습별 README와 결과 파일입니다. 검증일은 2026-10-17이며, 아래 수치는 해당 실행 결과에 한정합니다.
+
+| 사이트의 주장 | 근거 | 표현 범위 |
+| --- | --- | --- |
+| 운영 PostgreSQL 일일 백업 구축 | 기존 정기 백업 설정 확인과 사용자 구축 이력 확인 | 일일 논리 백업 설정. 운영 PITR·외부 백업 보관·자동 복구 완료로 확대하지 않음 |
+| 62개 테이블·32,117행 복구와 삭제 후 재검증 | results/restore.json, results/drop-restore.json | 애플리케이션 테이블 61개와 버전 관리 1개. 계정 소유권·ACL·외부 문서 복구 제외 |
+| 기존 인덱스 유무에 따른 실행 시간 | results/tuning.json, results/tuning-masked.json, results/source-context.json | 원본 복원본의 4라운드 평균 실행 시간 중앙값. 운영 지연 개선·느린 쿼리 순위로 표현하지 않음 |
+| 로그인·권한 검사 17개 | results/roles.json | 격리된 실습 계정의 허용·거부 검사. 운영 권한 전체 감사로 확대하지 않음 |
+| replica 중단 후 1,000행 반영·목표 시점 복구 | results/physical.json | 동일 호스트의 별도 인스턴스. 운영 복제·PITR 구축 완료를 주장하지 않음 |
+| primary Pod 삭제 후 4초에 쓰기 확인·replica 재합류 | results/cloudnativepg/failover.json, results/cloudnativepg/post-recovery.json | 단일 kind 노드의 관측값. 운영 RTO·모든 장애의 무손실 보장 제외 |
+| 스키마 이름 충돌과 PITR 조회 잠금 수정 | labs/02-query-tuning/README.md, labs/04-replication-pitr/README.md와 관련 검증 코드 | 실제 기록된 실습 중 오류. 운영 장애 대응 사례로 바꾸지 않음 |
+
+사이트에는 실행 절차와 검토한 수치만 소개합니다. 원본 백업·행 값·SQL 매개변수·접속 정보는 복제하지 않습니다.
