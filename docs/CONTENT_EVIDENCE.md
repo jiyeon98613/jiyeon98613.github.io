@@ -54,3 +54,16 @@
 | 스키마 이름 충돌과 PITR 조회 잠금 수정 | labs/02-query-tuning/README.md, labs/04-replication-pitr/README.md와 관련 검증 코드 | 실제 기록된 실습 중 오류. 운영 장애 대응 사례로 바꾸지 않음 |
 
 사이트에는 실행 절차와 검토한 수치만 소개합니다. 원본 백업·행 값·SQL 매개변수·접속 정보는 복제하지 않습니다.
+
+## 관리자 콘솔 청구내역서 사례 · 2026-10-18
+
+근거 소스: nhis-macro main af3ec034dfba, carebot-admin main 0c0339273e9c. 아래는 해당 시점의 구현과 계약 검사에 대한 설명입니다. 운영 DB 감사나 전체 청구 업무의 웹 통합 완료로 확대하지 않습니다.
+
+| 설명 | 근거 | 확인 범위 |
+| --- | --- | --- |
+| 현재 계산·저장 청구·발행 근거의 구분 | carebot-admin/routes/billing_statements.py, web-ui/src/PatientBillingRecords.jsx, NHIS api/routers/patient_billing_statements.py | 콘솔의 발행은 업무 API 경유. 계산·발행 근거 해시와 금액 일치 재검사. 계산 캐시는 저장할 수 있으나 조회가 Claim·주기·내역서를 생성하지 않음 |
+| 상태 전이·해시·발행본 보존 | c2f9a71d4e80, f5d8c21a9e60, 재발행 기반 migration과 서비스 | advisory transaction lock·행 잠금, 현재 근거 재검사, ISSUED 변경·삭제 거부, payload_snapshot과 개정 관계 |
+| 함수별 권한 계약 | f5d8c21a9e60·a9e4c72d1f60의 GRANT/REVOKE, tests/verify_patient_billing_contract.py의 _assert_privileges | preview·transition은 nhis_app과 carebot_admin_reader 양쪽에 허용. 관리자 조회·조정은 콘솔 계정, 환자용 발행본 조회는 incare_app에 허용. 함수 ACL 표와 실제 API 호출 경로를 구분 |
+| 금액 조정의 재시도 처리 | a9e4c72d1f60의 carebot.admin_mutation_requests와 제한 함수 | 요청 ID·운영자·업체·대상·입력 해시 대조, 동일 요청 미중복 적용, 다른 입력의 요청 ID 재사용 거부 |
+| API 모의 계약 27개 | carebot-admin/billing_statements_test.py를 2026-10-18 가상 DB·HTTP로 실행 | 27개 통과. 실제 DB/HTTP 호출을 대체한 경로 검사이며 운영 DB 권한 감사와 구분 |
+| 청구내역·재발행 이력 화면 | 실제 PatientBillingRecords 컴포넌트와 개발용 메모리 fixture | 외부·API 요청 0건, 브라우저 오류 0건. 가상 자료 38,800원 발행 후 OTHER 5,000원 추가, 개정 2의 43,800원과 기존 발행본 표시. 촬영용 가상 자료의 청구 일수·부담률만 보완 |
