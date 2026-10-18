@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="850" viewBox="0 0 1440 850" role="img" aria-labelledby="title desc">
+<title id="title">가상 처방전의 마스킹 전후</title><desc id="desc">왼쪽은 가상 신원정보와 처방 항목을 넣은 설명용 문서, 오른쪽은 상단 신원과 하단 의료기관·발행일 영역을 가린 예시입니다. 실제 원본이나 실행 결과가 아닙니다.</desc>
+<style>text{font-family:Pretendard,'Noto Sans KR',sans-serif;fill:#344256}.heading{font-size:22px;font-weight:600}.body{font-size:21px}.small{font-size:16px;fill:#6b7685}.masked{font-size:20px;fill:white}.masked-small{font-size:16px;fill:#dbe3ef}.label{font-size:23px;font-weight:600}.caption{font-size:17px;fill:#6b7685}</style><rect width="1440" height="850" fill="#fafbfc"/>
+<text x="52" y="56" class="label">전 · 로컬에서 원본 판독</text><text x="748" y="56" class="label">후 · 관리자 확인용 마스킹 이미지</text><rect x="52" y="100" width="640" height="650" rx="4" fill="white" stroke="#ccd4de"/>
+<text x="78" y="142" class="body">가상 양압기 처방전</text>
+<text x="78" y="167" class="small">설명용 가상 서식 · 실제 환자 원본 아님</text>
+<text x="78" y="223" class="body">성명: 가상 환자 A</text>
+<text x="78" y="258" class="body">주민번호: XXXXXX-XXXXXXX</text>
+<text x="78" y="293" class="body">전화: 010-XXXX-XXXX</text>
+<text x="78" y="353" class="heading">진료과목 · 처방 항목</text>
+<text x="78" y="397" class="body">기기 종류: □ CPAP   ■ APAP</text>
+<text x="78" y="435" class="body">설정 압력: 최소 6 / 최대 12</text>
+<text x="78" y="473" class="body">처방기간: 2026-10-01 ~ 2026-10-31</text>
+<text x="78" y="511" class="body">순응 구분: □ 중   ■ 후</text>
+<line x1="78" y1="544" x2="666" y2="544" stroke="#dce2e9"/>
+<text x="78" y="575" class="small">교부일로부터 사용기간 내에 대여</text>
+<text x="78" y="632" class="body">의료기관: 예시 의료기관</text>
+<text x="78" y="668" class="body">담당 의사: 예시 의사</text>
+<text x="78" y="704" class="body">발행일: 2026-09-30</text><rect x="748" y="100" width="640" height="650" rx="4" fill="white" stroke="#ccd4de"/>
+<text x="774" y="142" class="body">가상 양압기 처방전</text>
+<text x="774" y="167" class="small">설명용 가상 서식 · 실제 환자 원본 아님</text>
+<rect x="749" y="187" width="638" height="128" fill="#202631"/>
+<text x="774" y="242" class="masked">환자 신원 영역 마스킹</text>
+<text x="774" y="274" class="masked-small">이미지에서 식별정보를 가린 뒤 관리자 확인</text>
+<text x="774" y="353" class="heading">진료과목 · 처방 항목</text>
+<text x="774" y="397" class="body">기기 종류: □ CPAP   ■ APAP</text>
+<text x="774" y="435" class="body">설정 압력: 최소 6 / 최대 12</text>
+<text x="774" y="473" class="body">처방기간: 2026-10-01 ~ 2026-10-31</text>
+<text x="774" y="511" class="body">순응 구분: □ 중   ■ 후</text>
+<line x1="774" y1="544" x2="1362" y2="544" stroke="#dce2e9"/>
+<text x="774" y="575" class="small">교부일로부터 사용기간 내에 대여</text>
+<rect x="749" y="595" width="638" height="154" fill="#202631"/>
+<text x="774" y="653" class="masked">의료기관 · 의사 · 발행일 영역 마스킹</text><text x="52" y="797" class="caption">모든 값은 가상입니다. 마스킹 위치와 정보 분담을 설명하기 위해 서식을 간략화했습니다.</text><text x="52" y="825" class="caption">실제 처리에서는 기준 문구를 찾지 못하면 외부 전송을 중단합니다.</text></svg>

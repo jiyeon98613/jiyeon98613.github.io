@@ -7,7 +7,7 @@ from html import escape
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-WIDTH, HEIGHT = 1440, 686
+WIDTH, HEIGHT = 1440, 720
 TABLES = [
     ('patient_documents', '환자 문서', 44, 60, 368, [
         ('PK', 'doc_id', 'uuid'),
@@ -48,6 +48,7 @@ TABLES = [
         ('PK', 'claim_id', 'uuid'),
         ('FK', 'billing_cycle_id', 'uuid'),
         ('FK', 'ps_id', 'uuid'),
+        ('', 'segment_index', 'integer'),
         ('', 'period_start', 'date'),
         ('', 'period_end', 'date'),
         ('', 'billing_rate', 'integer'),
@@ -77,7 +78,7 @@ def main():
         'M1030 455 H940',                           # claim.billing_cycle_id -> cycle
         'M1213 265 V366',                           # claim_doc.claim_id -> claim
         'M1260 60 V24 H252 V60',                     # claim_doc.doc_id -> document
-        'M1220 598 V638 H234 V598',                  # claim.ps_id -> prescription
+        'M1220 625 V668 H234 V598',                  # claim.ps_id -> prescription
         'M44 512 H16 V445 H44',                      # prescription supersession self FK
     ]:
         parts.append(f'<path class="edge" d="{path}"/>')
@@ -88,7 +89,7 @@ def main():
         (950, 447, 'N : 1', 55),
         (1225, 322, 'claim_id', 70),
         (703, 24, 'doc_id', 58),
-        (716, 638, 'ps_id', 51),
+        (716, 668, 'ps_id', 51),
     ]:
         parts.append(label(*item))
     for name, note, x, y, w, fields in TABLES:
@@ -102,7 +103,7 @@ def main():
             parts.append(text(x + 13, row_y, key, 'key'))
             parts.append(text(x + 63, row_y, column))
             parts.append(text(x + w - 14, row_y, typ, 'type', 'end'))
-    parts.append(text(44, 674, 'runtime 스키마 · 주요 컬럼 발췌 · 화살표: FK → 참조 대상 · UQ: 유일성 제약 · FK*: 참조 테이블 생략', 'legend'))
+    parts.append(text(44, 706, 'runtime 스키마 · 주요 컬럼 발췌 · 화살표: FK → 참조 대상 · UQ: 유일성 제약 · FK*: 참조 테이블 생략', 'legend'))
     parts.append('</svg>')
     target = ROOT / 'public/assets/nhis-billing-erd.svg'
     target.write_text('\n'.join(parts) + '\n')

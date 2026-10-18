@@ -19,6 +19,7 @@ Python 3.11 이상만 있으면 빌드할 수 있습니다. 런타임 외부 패
 
     python3 scripts/generate_erd.py
     python3 scripts/generate_billing_erd.py
+    python3 scripts/generate_ocr_example.py
     python3 build.py
     python3 scripts/check_site.py
     python3 -m http.server 4173 --bind 127.0.0.1 --directory dist
@@ -39,6 +40,8 @@ Python 3.11 이상만 있으면 빌드할 수 있습니다. 런타임 외부 패
 | public/assets/site.css | 반응형 레이아웃·색·타이포그래피 |
 | public/assets/site.js | 메뉴·문서 사례·청구 타임라인·이미지 확대 |
 | scripts/generate_erd.py | 교육용 ERD SVG의 재생성 |
+| scripts/generate_billing_erd.py | 청구 관련 실제 테이블·주요 컬럼의 ERD 재생성 |
+| scripts/generate_ocr_example.py | 가상 처방전의 마스킹 전후 설명용 SVG 재생성 |
 | docs/CONTENT_EVIDENCE.md | 주장별 근거와 검증 범위 |
 
 본문은 HTML 파일로 관리하며 Obsidian 동기화와 독립되어 있습니다. 수정 후 빌드와 검사를 실행합니다.

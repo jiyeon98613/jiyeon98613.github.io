@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="686" viewBox="0 0 1440 686" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="720" viewBox="0 0 1440 720" role="img" aria-labelledby="title desc">
 <title id="title">건강보험 청구 시스템 ERD</title>
 <desc id="desc">실제 runtime 스키마의 6개 테이블 발췌. 화살표는 외래키에서 참조 대상으로 향합니다. 처방전의 자기참조, 월별 관리와 기간별 청구, 월별 근거와 청구별 첨부 관계를 표시합니다.</desc>
 <defs><marker id="fk-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10" fill="none" stroke="#71839a" stroke-width="1.5"/></marker></defs>
@@ -11,7 +11,7 @@
 <path class="edge" d="M1030 455 H940"/>
 <path class="edge" d="M1213 265 V366"/>
 <path class="edge" d="M1260 60 V24 H252 V60"/>
-<path class="edge" d="M1220 598 V638 H234 V598"/>
+<path class="edge" d="M1220 625 V668 H234 V598"/>
 <path class="edge" d="M44 512 H16 V445 H44"/>
 <rect x="431" y="161" width="53" height="20" fill="white"/><text x="436" y="174" class="edge-label">doc_id</text>
 <rect x="739" y="322" width="111" height="20" fill="white"/><text x="744" y="335" class="edge-label">billing_cycle_id</text>
@@ -19,7 +19,7 @@
 <rect x="945" y="434" width="55" height="20" fill="white"/><text x="950" y="447" class="edge-label">N : 1</text>
 <rect x="1220" y="309" width="70" height="20" fill="white"/><text x="1225" y="322" class="edge-label">claim_id</text>
 <rect x="698" y="11" width="58" height="20" fill="white"/><text x="703" y="24" class="edge-label">doc_id</text>
-<rect x="711" y="625" width="51" height="20" fill="white"/><text x="716" y="638" class="edge-label">ps_id</text>
+<rect x="711" y="655" width="51" height="20" fill="white"/><text x="716" y="668" class="edge-label">ps_id</text>
 <rect x="44" y="60" width="368" height="178" rx="3" fill="white" stroke="#ccd4de"/>
 <path d="M44 112 H412" stroke="#dce2e9"/>
 <text x="59" y="82" class="table-name">patient_documents</text>
@@ -115,7 +115,7 @@
 <text x="1043" y="244" class="key"></text>
 <text x="1093" y="244" class="column">attachment_role</text>
 <text x="1382" y="244" class="type" text-anchor="end">varchar</text>
-<rect x="1030" y="366" width="366" height="232" rx="3" fill="white" stroke="#ccd4de"/>
+<rect x="1030" y="366" width="366" height="259" rx="3" fill="white" stroke="#ccd4de"/>
 <path d="M1030 418 H1396" stroke="#dce2e9"/>
 <text x="1045" y="388" class="table-name">claims</text>
 <text x="1045" y="406" class="table-note">기간별 청구</text>
@@ -129,13 +129,16 @@
 <text x="1093" y="496" class="column">ps_id</text>
 <text x="1382" y="496" class="type" text-anchor="end">uuid</text>
 <text x="1043" y="523" class="key"></text>
-<text x="1093" y="523" class="column">period_start</text>
-<text x="1382" y="523" class="type" text-anchor="end">date</text>
+<text x="1093" y="523" class="column">segment_index</text>
+<text x="1382" y="523" class="type" text-anchor="end">integer</text>
 <text x="1043" y="550" class="key"></text>
-<text x="1093" y="550" class="column">period_end</text>
+<text x="1093" y="550" class="column">period_start</text>
 <text x="1382" y="550" class="type" text-anchor="end">date</text>
 <text x="1043" y="577" class="key"></text>
-<text x="1093" y="577" class="column">billing_rate</text>
-<text x="1382" y="577" class="type" text-anchor="end">integer</text>
-<text x="44" y="674" class="legend">runtime 스키마 · 주요 컬럼 발췌 · 화살표: FK → 참조 대상 · UQ: 유일성 제약 · FK*: 참조 테이블 생략</text>
+<text x="1093" y="577" class="column">period_end</text>
+<text x="1382" y="577" class="type" text-anchor="end">date</text>
+<text x="1043" y="604" class="key"></text>
+<text x="1093" y="604" class="column">billing_rate</text>
+<text x="1382" y="604" class="type" text-anchor="end">integer</text>
+<text x="44" y="706" class="legend">runtime 스키마 · 주요 컬럼 발췌 · 화살표: FK → 참조 대상 · UQ: 유일성 제약 · FK*: 참조 테이블 생략</text>
 </svg>

@@ -21,6 +21,23 @@
 
 기능 상태와 수치가 바뀌면 해당 기준일·설명·화면을 함께 검토합니다. 과거 스냅샷과 현재 구조를 같은 기준으로 표시하지 않습니다. 생성한 도해는 전체 운영 스키마가 아니라 설명에 필요한 관계의 요약입니다.
 
+## 2026-10-18 청구 시스템의 판단·검증 근거 보강
+
+이 변경은 기존 비공개 기록의 공개용 요약과 가상 데이터로 재현한 예시입니다. 새로운 운영 DB 검사·OCR 측정·외부 API 호출을 수행한 결과로 표시하지 않습니다.
+
+| 추가한 내용 | 근거와 시점 | 공개 표현의 범위 |
+| --- | --- | --- |
+| 처방전 수정 전후 표 | PS 유효성 계약, 2026-09-05 PS 이력 검토 기록, Prescription.is_valid·superseded_by_ps_id·Claim.ps_id | PS-A/PS-B는 가상 식별자. 과거 운영 행을 그대로 재현했다고 주장하지 않음. 단일 후보 판정과 청구 전 검증을 구분 |
+| 부분 수정 저장과 잔존 오류 | nhis-macro #9 코멘트 1848, PR #67, migration a4d9c72e1f60, ps_history_review.py | APPLIED_WITH_BLOCKERS 반환과 승인형 부분 저장의 구현 기록. 저장을 청구 가능 완료로 세지 않음 |
+| 월별 근거 연결 구조 선택 | docs/plans/PLAN_ASSET_MODEL.md §8.5, 2026-06-15 결정 | 초기 SQLite 모델의 실제 단일 FK와 검토 초안인 doc_kind+ref_id를 구분. 현재 PostgreSQL 연결 구조와 동일 시점으로 설명하지 않음 |
+| 3건을 넘는 기간별 Claim | nhis-macro #33 코멘트 1587·1662, Claim.billing_cycle_id·segment_index, active cycle/segment unique index | 월별 관리와 1:N 청구·호환 필드의 역할. 모든 복합 NHIS 실화면 케이스의 검증 완료로 확대하지 않음 |
+| 원천 변경 후 발행본 보존 예시 | docs/database/PATIENT_BILLING_STATEMENT_API.md, nhis-macro #89 코멘트 2324·2358, PatientBillingStatement.source_hash·payload_snapshot·revision_no | 17,800/20,800원과 H₁/H₂는 고정 가상 예시. 과거 실제 PostgreSQL의 stale 발행 거부·재시도·스냅샷 보존 검증과 웹의 설명용 동작을 구분 |
+| 로컬 VLM 60.3% → 88.9% | docs/plans/PLAN_VLM_OCR_SPIKE.md §6·7, 2026-06-23~24 | 정답표를 준비한 7장·핵심 9필드의 과거 집계값. 임상 체크박스나 GPT·운영 전체·양식별 정확도 수치로 사용하지 않음. 원본 정답표·개별 결과는 공개하지 않음 |
+| 체크박스 확대·잉크 비율 접근의 한계 | PLAN_VLM_OCR_SPIKE.md의 체크박스 크롭·CV 보류 기록 | 관찰한 한계와 접근 전환을 설명. 새로운 비교 실험이나 전체 방법의 보편적 성능 판단으로 표현하지 않음 |
+| 마스킹 전후 이미지와 전송 차단 예시 | HANDOFF_GPT54_CLINICAL_OCR.md의 2026-06-24 검토 기록, pii_masker.mask_identity_bands, test_pii_masker.test_mask_identity_bands_fail_closed | 공개 SVG는 가상 문서이며 실제 원본·실행 결과가 아님. 기준 문구 누락 시 마스킹 파일 미생성·전송 차단과 관리자 확인·승인을 구분. 웹 예시에서 API 호출 없음 |
+
+당시 실험 문서는 목적 결정·정답표 작성·Windows 실행·결과 확인을 본인의 역할로, 스크립트 구현을 Cursor의 역할로 명시합니다. 구현을 모두 수작업으로 독립 작성했다는 표현을 추가하지 않습니다.
+
 ## PostgreSQL 운영 실습
 
 공개 근거는 [postgres-ops-lab](https://github.com/jiyeon98613/postgres-ops-lab)의 실습별 README와 결과 파일입니다. 검증일은 2026-10-17이며, 아래 수치는 해당 실행 결과에 한정합니다.
