@@ -27,23 +27,40 @@ document.querySelector('.close-dialog')?.addEventListener('click', closeImage);
 imageDialog?.addEventListener('click', (event) => { if (event.target === imageDialog) closeImage(); });
 imageDialog?.addEventListener('close', () => lastImageButton?.focus());
 
-document.querySelectorAll('[data-document-tab]').forEach((button) => button.addEventListener('click', () => {
-  document.querySelectorAll('[data-document-tab]').forEach((tab) => {
+// Each tablist controls its own panels; arrow keys follow the selected tab.
+document.querySelectorAll('[role="tablist"]').forEach((group) => {
+  const tabs = [...group.querySelectorAll('[role="tab"]')];
+  const select = (button) => tabs.forEach((tab) => {
     const active = tab === button;
     tab.setAttribute('aria-selected', String(active));
-    document.getElementById(tab.getAttribute('aria-controls')).hidden = !active;
+    tab.tabIndex = active ? 0 : -1;
+    const panel = document.getElementById(tab.getAttribute('aria-controls'));
+    if (panel) panel.hidden = !active;
   });
-}));
-document.querySelector('[role="tablist"]')?.addEventListener('keydown', (event) => {
-  const tabs = [...event.currentTarget.querySelectorAll('[role="tab"]')];
-  let index = tabs.indexOf(document.activeElement);
-  if (event.key === 'ArrowRight') index = (index + 1) % tabs.length;
-  else if (event.key === 'ArrowLeft') index = (index - 1 + tabs.length) % tabs.length;
-  else if (event.key === 'Home') index = 0;
-  else if (event.key === 'End') index = tabs.length - 1;
-  else return;
-  event.preventDefault(); tabs[index].focus(); tabs[index].click();
+  tabs.forEach((tab) => tab.addEventListener('click', () => select(tab)));
+  if (tabs.length) select(tabs.find((tab) => tab.getAttribute('aria-selected') === 'true') || tabs[0]);
+  group.addEventListener('keydown', (event) => {
+    let index = tabs.indexOf(document.activeElement);
+    if (index < 0) return;
+    if (event.key === 'ArrowRight') index = (index + 1) % tabs.length;
+    else if (event.key === 'ArrowLeft') index = (index - 1 + tabs.length) % tabs.length;
+    else if (event.key === 'Home') index = 0;
+    else if (event.key === 'End') index = tabs.length - 1;
+    else return;
+    event.preventDefault(); tabs[index].focus(); select(tabs[index]);
+  });
 });
+const revealLinkedTab = () => {
+  const target = document.getElementById(decodeURIComponent(location.hash.slice(1)));
+  const panel = target?.closest('[role="tabpanel"]');
+  if (!panel?.hidden) return;
+  const button = [...document.querySelectorAll('[role="tab"]')].find((tab) => tab.getAttribute('aria-controls') === panel.id);
+  button?.click();
+  if (button) requestAnimationFrame(() => target.scrollIntoView({ block: 'start' }));
+};
+revealLinkedTab();
+window.addEventListener('hashchange', revealLinkedTab);
+
 const travelToggle = document.getElementById('travel-toggle');
 travelToggle?.addEventListener('change', () => {
   const active = travelToggle.checked;
