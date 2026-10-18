@@ -3,6 +3,11 @@
   <h1>PostgreSQL 운영 실습</h1>
   <p class="lead">청구 시스템의 실제 백업과 조회 SQL을 대상으로 복구 가능성과 기존 인덱스의 효과를 확인했습니다. 권한 분리, 스트리밍 복제, PITR과 자동 장애조치까지 실습했습니다.</p>
   <dl class="case-meta"><div><dt>기간</dt><dd>2026.10 · 개인 프로젝트<br>검증일 2026.10.17</dd></div><div><dt>환경</dt><dd>PostgreSQL 18.6 · Linux<br>고객사 서버 내 격리 복원 · 로컬 Kubernetes</dd></div><div><dt>기술</dt><dd>Python · pgbench · pg_stat_statements<br>Podman · kind · CloudNativePG</dd></div></dl>
+  <div class="case-highlights" aria-label="실습의 핵심 결과">
+    <div><span>실제 백업 복원</span><strong>62개 테이블·32,117행</strong><small>값과 중복 개수 대조</small></div>
+    <div><span>계정별 접근</span><strong>허용·거부 검사 17개</strong><small>실습 계정으로 직접 로그인</small></div>
+    <div><span>인덱스 비교</span><strong>기존 인덱스의 효과 확인</strong><small>운영 병목 개선과 구분</small></div>
+  </div>
   <p class="home-about"><a class="text-link" href="https://github.com/jiyeon98613/postgres-ops-lab" target="_blank" rel="noopener noreferrer">실습 코드와 결과 보기 ↗</a></p>
 </section>
 <div class="case-layout wrap">
@@ -62,4 +67,4 @@ python scripts/cnpg.py failover</code></pre>
     </section>
   </div>
 </div>
-<section class="next-project wrap"><a href="/projects/nhis-billing/"><div><span>프로젝트</span><h2>건강보험 청구 시스템</h2></div><span class="next-arrow" aria-hidden="true">↗</span></a></section>
+<section class="next-project wrap"><a href="/projects/admin-console/"><div><span>업무 시스템의 변경 통제</span><h2>관리자 콘솔의 정합성과 권한</h2></div><span class="next-arrow" aria-hidden="true">↗</span></a></section>

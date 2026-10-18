@@ -1,7 +1,7 @@
 <section class="case-hero wrap">
   <div class="breadcrumb"><a href="/#work">프로젝트</a><span>/</span><span>관리자 콘솔</span></div>
-  <h1>관리자 콘솔</h1>
-  <p class="lead">환자 관리 UI와 청구내역서의 API·제한 함수·권한 설계를 정리했습니다.</p>
+  <h1>관리자 콘솔의 정합성과 권한</h1>
+  <p class="lead">건강보험 청구 시스템의 관리자 웹을 다룬 상세 사례입니다. 청구내역서의 발행본 보존, 요청 재시도와 DB 함수의 접근 권한을 설명합니다.</p>
   <dl class="case-meta"><div><dt>구성</dt><dd>2인 협업 · 운영 시스템</dd></div><div><dt>담당</dt><dd>업무 조건 · DB 모델·제한 함수<br>API·권한 계약 · 백엔드·배치</dd></div><div><dt>기술</dt><dd>PostgreSQL · Python · FastAPI<br>React · Cloudflare Access</dd></div></dl>
 </section>
 
@@ -87,13 +87,21 @@ GRANT EXECUTE ON FUNCTION
     </section>
 
     <section class="case-section" id="contracts"><span class="kicker">06</span><h2>계약 검증과 기여</h2>
-      <p>화면에 필요한 값을 반환하는 것과 함께, 허용하지 않은 호출과 변경 이후의 결과를 확인하는 계약 검사를 두었습니다. API 경로와 DB 권한·상태 전이 검사를 구분했습니다.</p>
-      <div class="table-scroll"><table class="comparison"><thead><tr><th>검사 구분</th><th>확인하는 내용</th></tr></thead><tbody>
-        <tr><td>콘솔 API 모의 계약</td><td>서버의 운영자·업체 문맥 사용, <code>STAFF</code> 차단, 요청 ID 필수, 발행 API 전달, 계산 장애 시 대체값 금지, 기본 테이블 직접 DML 부재. <strong>2026.10.18 소스 기준 27개 항목을 가상 DB·HTTP로 확인했습니다.</strong></td></tr>
-        <tr><td>PostgreSQL 권한 계약</td><td><code>has_function_privilege</code>와 카탈로그 ACL을 조회해 역할별 함수 실행 허용·거부와 <code>PUBLIC</code> 실행 권한 부재를 검사하는 코드가 있습니다.</td></tr>
-        <tr><td>업무 상태·재시도 계약</td><td>준비 이후 근거 변경, 발행본 보존·재발행, 추가 금액 조정, 동일 요청 재시도와 입력 충돌을 다루는 DB 계약 검사 코드가 있습니다.</td></tr>
-        <tr><td>화면 확인</td><td>실제 청구내역서 컴포넌트에서 가상 자료의 발행 준비·발행·금액 조정·재발행 이력을 확인했습니다. 이 화면 확인은 운영 DB 검증과 구분합니다.</td></tr>
+      <p>허용하지 않은 호출과 변경 이후의 결과를 확인하는 검사를 두었습니다. 아래에서는 검사 코드 확인, 가상 DB·HTTP를 이용한 실행, 실제 PostgreSQL의 계정 검증을 구분합니다.</p>
+      <div class="table-scroll"><table class="comparison"><thead><tr><th scope="col">확인 대상</th><th scope="col">환경·기준일</th><th scope="col">기대 결과와 확인 수준</th></tr></thead><tbody>
+        <tr><th scope="row">콘솔 API 경로</th><td>가상 DB·HTTP<br>실행일 2026.10.18</td><td>서버의 운영자·업체 문맥 사용, STAFF 차단, 요청 ID 필수와 발행 API 전달 등을 검사했습니다. <strong>모의 계약 검사 27개 통과</strong>이며 운영 DB에서의 실행 결과는 아닙니다.</td></tr>
+        <tr><th scope="row">DB 함수의 실행 권한</th><td>migration·검사 코드<br>소스 기준 2026.10.18</td><td>역할별 EXECUTE 허용·거부와 PUBLIC 권한 부재를 확인하는 코드가 있습니다. 위 권한 표는 이 계약을 요약했습니다. 운영 계정의 최신 실행 로그는 공개 근거에 포함하지 않았습니다.</td></tr>
+        <tr><th scope="row">발행본 보존·재시도</th><td>기존 PostgreSQL 검증 기록·현재 검사 코드<br>소스 기준 2026.10.18</td><td>기존 기록에서 원천 변경 후 발행 거부, 동일 요청 재시도와 발행 스냅샷 보존을 확인했습니다. 현재 코드에 추가된 발행 행의 변경·삭제 거부와 재발행 검사는 소스 확인 범위입니다.</td></tr>
+        <tr><th scope="row">화면의 발행·재발행</th><td>실제 컴포넌트·브라우저 메모리<br>확인일 2026.10.18</td><td>가상 자료로 발행 준비·금액 조정·재발행 이력을 확인했습니다. 화면은 동작 설명 자료이며 실제 DB 권한 검증을 대신하지 않습니다.</td></tr>
       </tbody></table></div>
+      <h3 id="permission-evidence">실제 PostgreSQL에서 확인한 허용·거부 사례</h3>
+      <p>2026.10.17 별도 운영 실습 DB에서 계정별로 로그인해 실행한 결과입니다. 운영 콘솔 계정과 다른 실습 계정의 검사이며, 전체 17개 중 세 사례를 발췌했습니다.</p>
+      <div class="table-scroll"><table class="comparison"><thead><tr><th scope="col">실행한 작업</th><th scope="col">기대 결과</th><th scope="col">실제 결과</th></tr></thead><tbody>
+        <tr><td><code>lab_readonly</code>의 이력 SELECT</td><td>조회 허용</td><td><code>read_history</code> 성공</td></tr>
+        <tr><td><code>lab_readonly</code>의 INSERT</td><td>입력 거부</td><td><code>insert_denied</code> · SQLSTATE <code>42501</code></td></tr>
+        <tr><td><code>lab_application</code>의 소유자 역할 전환</td><td>권한 상승 거부</td><td><code>escalation_denied</code> · SQLSTATE <code>42501</code></td></tr>
+      </tbody></table></div>
+      <p><a class="text-link" href="https://github.com/jiyeon98613/postgres-ops-lab/blob/main/results/roles.json" target="_blank" rel="noopener noreferrer">실행 결과 17개 확인 ↗</a> · <a class="text-link" href="https://github.com/jiyeon98613/postgres-ops-lab/tree/main/labs/03-roles" target="_blank" rel="noopener noreferrer">검사 환경과 절차 ↗</a></p>
       <div class="role-split"><div><h3>제 담당 범위</h3><p>청구 업무 조건과 데이터 의미 정리, DB 모델·제한 함수·상태 전이 규칙, API·권한 계약 검토, 백엔드·배치 처리와 결과 확인을 담당했습니다. SQL·Python 구현에는 AI 코딩 도구를 활용했습니다.</p></div><div class="collab"><h3>협업과 구현 범위</h3><p>콘솔 UI는 협업 결과물입니다. 청구내역서의 데이터 구조와 발행·재발행 계약을 화면과 맞췄으며, 기존 청구 업무 전체를 관리자 웹으로 통합하는 작업은 진행 중입니다.</p></div></div>
       <p class="evidence-link"><a class="text-link" href="https://github.com/jiyeon98613/jiyeon98613.github.io/blob/main/docs/CONTENT_EVIDENCE.md" target="_blank" rel="noopener noreferrer">설명 근거와 검증 범위 ↗</a></p>
     </section>

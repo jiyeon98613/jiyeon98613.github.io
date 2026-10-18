@@ -10,7 +10,7 @@ menu?.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => {
   menu.classList.remove('is-open');
 }));
 if (document.body.dataset.page === 'about') document.querySelector('[data-nav="about"]')?.setAttribute('aria-current', 'page');
-if (['billing', 'console', 'education'].includes(document.body.dataset.page)) document.querySelector('[data-nav="projects"]')?.setAttribute('aria-current', 'page');
+if (['billing', 'ops', 'console', 'education'].includes(document.body.dataset.page)) document.querySelector('[data-nav="projects"]')?.setAttribute('aria-current', 'page');
 
 const imageDialog = document.querySelector('.image-dialog');
 let lastImageButton = null;
@@ -50,16 +50,28 @@ document.querySelectorAll('[role="tablist"]').forEach((group) => {
     event.preventDefault(); tabs[index].focus(); select(tabs[index]);
   });
 });
-const revealLinkedTab = () => {
-  const target = document.getElementById(decodeURIComponent(location.hash.slice(1)));
-  const panel = target?.closest('[role="tabpanel"]');
-  if (!panel?.hidden) return;
-  const button = [...document.querySelectorAll('[role="tab"]')].find((tab) => tab.getAttribute('aria-controls') === panel.id);
-  button?.click();
-  if (button) requestAnimationFrame(() => target.scrollIntoView({ block: 'start' }));
+const revealLinkedContent = () => {
+  let id;
+  try { id = decodeURIComponent(location.hash.slice(1)); } catch { return; }
+  const target = document.getElementById(id);
+  if (!target) return;
+  let revealed = false;
+  for (let parent = target; parent; parent = parent.parentElement) {
+    if (parent.tagName === 'DETAILS' && !parent.open) {
+      parent.open = true;
+      revealed = true;
+    }
+  }
+  const panel = target.closest('[role="tabpanel"]');
+  if (panel?.hidden) {
+    const button = [...document.querySelectorAll('[role="tab"]')].find((tab) => tab.getAttribute('aria-controls') === panel.id);
+    button?.click();
+    revealed ||= Boolean(button);
+  }
+  if (revealed) requestAnimationFrame(() => target.scrollIntoView({ block: 'start' }));
 };
-revealLinkedTab();
-window.addEventListener('hashchange', revealLinkedTab);
+revealLinkedContent();
+window.addEventListener('hashchange', revealLinkedContent);
 
 const travelToggle = document.getElementById('travel-toggle');
 travelToggle?.addEventListener('change', () => {
@@ -72,6 +84,15 @@ travelToggle?.addEventListener('change', () => {
     : '여행 기록이 없을 때는 처방 변경일을 기준으로 두 구간으로 나뉩니다. 월 전체를 관리하는 BillingCycle은 그대로 한 건입니다.';
 });
 document.querySelectorAll('[data-print]').forEach((button) => button.addEventListener('click', () => window.print()));
+let expandedForPrint = [];
+window.addEventListener('beforeprint', () => {
+  expandedForPrint = [...document.querySelectorAll('details:not([open])')];
+  expandedForPrint.forEach((details) => { details.open = true; });
+});
+window.addEventListener('afterprint', () => {
+  expandedForPrint.forEach((details) => { details.open = false; });
+  expandedForPrint = [];
+});
 
 // Fixed fictional values explain the lifecycle; no billing calculation or API call.
 const statementExamples = {
